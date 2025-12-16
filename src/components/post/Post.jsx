@@ -9,8 +9,8 @@ import Comments from "../comments/Comments";
 import { useState, useContext } from "react";
 import moment from "moment";
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { makeRequest } from "../../axios";
 import { AuthContext } from "../../context/authContext";
+import { supabase } from "../../supabaseClient";
 
 const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
