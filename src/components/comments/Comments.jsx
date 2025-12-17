@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import "./comments.scss";
 import { AuthContext } from "../../context/authContext";
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { makeRequest } from "../../axios";
 import moment from "moment";
 
 const Comments = ({ postId }) => {
