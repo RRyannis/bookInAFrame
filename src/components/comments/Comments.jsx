@@ -1,20 +1,25 @@
 import { useContext, useState } from "react";
 import "./comments.scss";
 import { AuthContext } from "../../context/authContext";
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import moment from "moment";
+import { supabase } from "../../supabaseClient";
 
 const Comments = ({ postId }) => {
   const [ commentDesc, setCommentDesc] = useState("");
+
   const { currentUser } = useContext(AuthContext);
   
 
-   const { isLoading, error, data } = useQuery({
-    queryKey: ["comments"],
+   const { isLoading, error: _error, data: commentsData } = useQuery({
+    queryKey: ["comments", postId],
     queryFn: async () => {
-      const res = await makeRequest.get("/comments?postId=" + postId);
-       
-      return res.data;
+      const { data: supabaseData, error: fetchError } = await supabase.from("comments").select().eq("postId", postId);
+      if(fetchError){
+        console.error("Supabase likes fetch error:", fetchError);
+        throw new Error(fetchError.message);
+      }
+      return supabaseData.map(comment => comment.userId);
     }
   });
 
