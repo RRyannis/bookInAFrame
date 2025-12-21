@@ -12,6 +12,8 @@ const Share = () => {
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
 
+  const TEMP_BOOK_ID = '48342c9c-4c4b-45ba-8f07-24ea8f7e6524';
+
   const uploadFile = async (file) => {
     if (!file) return null;
 
@@ -71,7 +73,7 @@ const Share = () => {
         caption: desc, 
         image_url: imageUrl, 
         user_id: currentUser.id, // User ID is critical
-        book_id: 'd9620593-9799-4c57-8149-16a75f284e1b', // ⚠️ Placeholder: Replace with actual selected book ID
+        book_id: TEMP_BOOK_ID,
         visibility: 'public' 
     });
     
