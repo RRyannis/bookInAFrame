@@ -14,31 +14,39 @@ const Comments = ({ postId }) => {
    const { isLoading, error: _error, data: commentsData } = useQuery({
     queryKey: ["comments", postId],
     queryFn: async () => {
-      const { data: supabaseData, error: fetchError } = await supabase.from("comments").select().eq("postId", postId);
+      const { data: supabaseData, error: fetchError } = await supabase.from("comments").select(`*, 
+            profile:userId (username, avatar_url)
+        `).eq("postId", postId).order('createdAt', { ascending: false });;
       if(fetchError){
         console.error("Supabase likes fetch error:", fetchError);
         throw new Error(fetchError.message);
       }
-      return supabaseData.map(comment => comment.userId);
+      return supabaseData;
     }
   });
 
    const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: (newComment)=>{
-      return makeRequest.post("/comments", newComment);
+  const addCommentMutation = useMutation({
+    mutationFn: async (newComment)=>{
+      const { error } = await supabase.from("comments").insert([newComment]);
+
+      if (error) {
+        console.error("Supabase comment insert error:", error);
+        throw new Error(error.message);
+      }
     },
     onSuccess: () => {
       // Invalidate and refetch
-      queryClient.invalidateQueries(["comments"])
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
     },
   })
 
 
   const handleClick = async (e) => {
     e.preventDefault();
-    mutation.mutate({ desc: commentDesc, postId: postId });
+    if (!currentUser?.id || !commentDesc.trim()) return;
+    addCommentMutation.mutate({ desc: commentDesc,userId:currentUser.id, postId: postId });
     setCommentDesc("");
     
   };
@@ -47,16 +55,16 @@ const Comments = ({ postId }) => {
   return (
     <div className="comments">
       <div className="write">
-        <img src={currentUser.profilePic} alt="" />
+        <img src={currentUser.avatar_url} alt="" />
         <input type="text" placeholder="write a comment" value={commentDesc }onChange={e=>setCommentDesc(e.target.value)}/>
         <button onClick={handleClick}>Send</button>
       </div>
       { isLoading? "loading" : 
-      data.map((comment) => (
+      commentsData.map((comment) => (
         <div className="comment">
-          <img src={comment.profilePic} alt="" />
+          <img src={comment.profile.avatar_url} alt="" />
           <div className="info">
-            <span>{comment.name}</span>
+            <span>{comment.profile.username}</span>
             <p>{comment.desc}</p>
           </div>
           <span className="date">{moment(comment.createdAt).fromNow()}</span>
@@ -67,4 +75,3 @@ const Comments = ({ postId }) => {
 };
 
 export default Comments;
-// fake asf change
