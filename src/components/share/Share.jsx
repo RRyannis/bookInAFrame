@@ -4,57 +4,88 @@ import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { _useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from "../../supabaseClient";
 
 const Share = () => {
 
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
 
-    const upload = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await makeRequest.post("/upload", formData);
-      return res.data;
-    } catch (err) {
-      console.log(err);
+  const uploadFile = async (file) => {
+    if (!file) return null;
+
+    const fileName = `${Date.now()}_${file.name}`;
+    const { _data, error } = await supabase.storage
+        .from('bookInAFrameStorage')
+        .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false,
+        });
+
+    if (error) {
+        console.error("Supabase Storage Upload Error:", error);
+        throw new Error(error.message);
     }
+    const { data: publicUrlData } = supabase.storage
+        .from('bookInAFrameStorage')
+        .getPublicUrl(fileName);
+    return publicUrlData.publicUrl;
   };
 
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: (newPost)=>{
-      return makeRequest.post("/posts", newPost);
+ 
+  const postMutation = useMutation({
+    mutationFn: async (newPost) => {
+        // newPost structure will be { caption, image_url, user_id, book_id, etc. }
+        const { error } = await supabase.from("posts").insert([newPost]);
+
+        if (error) {
+            console.error("Supabase Post Insert Error:", error);
+            throw new Error(error.message);
+        }
     },
     onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries(["posts"])
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-  })
+});
 
   const {currentUser} = useContext(AuthContext)
 
   const handleClick = async (e) => {
     e.preventDefault();
-    let imgUrl = "";
-    if (file) {
-      const filename = await upload();
-      imgUrl = `http://localhost:8800/upload/${filename}`;
+    if (!desc.trim() && !file) return;
+    let imageUrl = "";
+    try {
+        if (file) {
+            imageUrl = await uploadFile(file);
+        }
+    } catch (err) {
+        console.error("Upload failed, cancelling post:", err);
+        return; 
     }
-    mutation.mutate({ desc, img: imgUrl });
+    
+    // Assuming 'desc' maps to 'caption' in your DB and you have a default 'book_id' ready
+    postMutation.mutate({ 
+        caption: desc, 
+        image_url: imageUrl, 
+        user_id: currentUser.id, // User ID is critical
+        book_id: 'd9620593-9799-4c57-8149-16a75f284e1b', // ⚠️ Placeholder: Replace with actual selected book ID
+        visibility: 'public' 
+    });
+    
     setDesc("");
     setFile(null);
-  };
+};
 
   return (
     <div className="share">
       <div className="container">
         <div className="top">
           <div className="left">
-            <img src={currentUser.profilePic} alt="" />
-            <input type="text" placeholder={`What's on your mind ${currentUser.name}?`} onChange={(e)=>setDesc(e.target.value)} value={desc}/>
+            <img src={currentUser.avatar_url} alt="" />
+            <input type="text" placeholder={`What's on your mind ${currentUser.username}?`} onChange={(e)=>setDesc(e.target.value)} value={desc}/>
           </div>
           <div className="right">
             {file && <img className="file" alt="" src={URL.createObjectURL(file)}/>}
