@@ -38,8 +38,11 @@ const Navbar = () =>{
                 <EmailOutlinedIcon />
                 <NotificationsOutlinedIcon />
                 <div className="user">
-                    <img src={currentUser.avatar_url} alt="" />
-                    <span>{currentUser.username}</span>
+                    <img 
+    src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
+    alt="" 
+/>
+<span>{currentUser?.full_name || currentUser?.username}</span>
                 </div>
             </div>
         </div>

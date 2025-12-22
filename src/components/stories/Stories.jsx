@@ -33,10 +33,16 @@ const Stories = () => {
     return(
         <div className='stories'>
             <div className="story">
-                <img src={currentUser.avatar_url} alt="" />
-                <span>{currentUser.username}</span>
-                <button>+</button>
-            </div>
+    <img
+        // FIX: Add optional chaining and a fallback image URL
+        src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
+        alt=""
+    />
+    <span>
+        {/* FIX: Add optional chaining for safe property access */}
+        {currentUser?.full_name || currentUser?.username}
+    </span>
+</div>
             {stories.map(story=>(
                 <div className="story" key={story.id}>
                 <img src={story.img} alt="" />

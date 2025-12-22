@@ -16,87 +16,95 @@ const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // The likes logic is already perfect: reads from 'likes' table
   const { isLoading, error: _error, data: likesData } = useQuery({
     queryKey: ["likes", post.id],
     queryFn: async () => {
       const { data: supabaseData, error: fetchError } = await supabase.from("likes").select("userId").eq("postId", post.id);
       if (fetchError) {
-      console.error("Supabase likes fetch error:", fetchError);
-      throw new Error(fetchError.message);
+        console.error("Supabase likes fetch error:", fetchError);
+        throw new Error(fetchError.message);
       }
+      // Map to return an array of user IDs
       return supabaseData.map(like => like.userId);
     }
-
   });
- 
-  const {currentUser} = useContext(AuthContext)
+
+  const { currentUser } = useContext(AuthContext);
   const currentUserId = currentUser?.id;
-  
+
   const queryClient = useQueryClient();
 
+  // Like/Unlike Mutation is already perfect
   const likeMutation = useMutation({
-    mutationFn: async (isCurrentlyLiked)=>{
+    mutationFn: async (isCurrentlyLiked) => {
       const currentUserId = currentUser.id;
-      if (isCurrentlyLiked){
+      if (isCurrentlyLiked) {
         const { error } = await supabase.from("likes").delete().eq("postId", post.id).eq("userId", currentUserId);
         if (error) throw new Error(error.message);
       } else {
-        const { error } = await supabase.from("likes").insert({ postId: post.id, userId: currentUserId});
+        // NOTE: The columns in the likes table are 'postId' and 'userId'
+        const { error } = await supabase.from("likes").insert({ postId: post.id, userId: currentUserId });
         if (error) throw new Error(error.message);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["likes", post.id] });
     },
-  })
+  });
 
+  // Delete Mutation is already perfect
   const deleteMutation = useMutation({
-    mutationFn: async (postId)=>{
+    mutationFn: async (postId) => {
       const { error } = await supabase.from("posts").delete().eq("id", postId);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-  })
+  });
 
   const handleLike = () => {
     likeMutation.mutate(likesData?.includes(currentUserId));
-  }
+  };
+
   const handleDelete = () => {
     deleteMutation.mutate(post.id);
-  }
-  
+  };
 
   return (
     <div className="post">
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            <img src={post.profilePic} alt="" />
+            {/* FIX: Accessing author profile data from the 'profile' object */}
+            <img src={post.profile.avatar_url} alt="" />
             <div className="details">
               <Link
-                to={`/profile/${post.userId}`}
+                to={`/profile/${post.user_id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.name}</span>
+                {/* FIX: Use the joined full_name or username */}
+                <span className="name">{post.profile.full_name || post.profile.username}</span>
               </Link>
-              <span className="date">{moment(post.createdAt).fromNow()}</span>
+              {/* The 'created_at' column is correct for moment */}
+              <span className="date">{moment(post.created_at).fromNow()}</span>
             </div>
           </div>
-          <MoreHorizIcon onClick={()=>setMenuOpen(!menuOpen)}/>
-          {(menuOpen && post.userId === currentUserId) && <button onClick={handleDelete}>delete</button>}
+          <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
+          {/* FIX: Use post.user_id for comparison */}
+          {(menuOpen && post.user_id === currentUserId) && <button onClick={handleDelete}>delete</button>}
         </div>
         <div className="content">
-          <p>{post.desc}</p>
-          <img src={post.img} alt="" />
+          <p>{post.caption}</p>
+          <img src={post.image_url} alt="" />
         </div>
         <div className="info">
           <div className="item">
             {isLoading ? "loading" : likesData.includes(currentUserId) ? (
-            <FavoriteOutlinedIcon style={{color: "blue"}} onClick={handleLike}/>
+              <FavoriteOutlinedIcon style={{ color: "blue" }} onClick={handleLike} />
             ) : (
-            <FavoriteBorderOutlinedIcon onClick={handleLike}/>
+              <FavoriteBorderOutlinedIcon onClick={handleLike} />
             )}
             {likesData?.length || 0} Likes
           </div>
@@ -109,7 +117,7 @@ const Post = ({ post }) => {
             Share
           </div>
         </div>
-        {commentOpen && <Comments postId={post.id}/>}
+        {commentOpen && <Comments postId={post.id} />}
       </div>
     </div>
   );

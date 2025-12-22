@@ -10,7 +10,6 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts";
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { makeRequest } from "../../axios";
 import { useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";

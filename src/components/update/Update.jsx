@@ -1,7 +1,6 @@
 import "./update.scss";
 import { useState, useContext } from "react";
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { makeRequest } from "../../axios.js";
 import { AuthContext } from "../../context/authContext";
 
 const Update = ({ setOpenUpdate, user }) => {

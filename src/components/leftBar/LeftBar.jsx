@@ -24,9 +24,16 @@ const LeftBar = () =>{
             <div className="container">
                 <div className="menu">
                     <div className="user">
-                        <img src={currentUser.avatar_url} alt="" />
-                        <span>{currentUser.username}</span>
-                    </div>
+    <img
+        // FIX: Add optional chaining and a fallback image URL
+        src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
+        alt=""
+    />
+    <span className="name">
+        {/* FIX: Add optional chaining for safe property access */}
+        {currentUser?.full_name || currentUser?.username}
+    </span>
+</div>
                     <div className="item">
                         <img src={Friends} alt="" />
                         <span>Friends</span>

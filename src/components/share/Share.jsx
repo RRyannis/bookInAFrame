@@ -4,7 +4,7 @@ import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import { _useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from "../../supabaseClient";
 
 const Share = () => {
@@ -86,9 +86,18 @@ const Share = () => {
       <div className="container">
         <div className="top">
           <div className="left">
-            <img src={currentUser.avatar_url} alt="" />
-            <input type="text" placeholder={`What's on your mind ${currentUser.username}?`} onChange={(e)=>setDesc(e.target.value)} value={desc}/>
-          </div>
+    {/* FIX 1: Safely access the avatar_url property */}
+    <img 
+        src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
+        alt="" 
+    />
+    <input 
+        type="text" 
+        placeholder={`What's on your mind ${currentUser?.full_name || currentUser?.username}?`} 
+        onChange={(e)=>setDesc(e.target.value)} 
+        value={desc}
+    />
+</div>
           <div className="right">
             {file && <img className="file" alt="" src={URL.createObjectURL(file)}/>}
           </div>
