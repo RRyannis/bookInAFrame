@@ -68,11 +68,11 @@ const Share = () => {
         return; 
     }
     
-    // Assuming 'desc' maps to 'caption' in your DB and you have a default 'book_id' ready
+   
     postMutation.mutate({ 
         caption: desc, 
         image_url: imageUrl, 
-        user_id: currentUser.id, // User ID is critical
+        user_id: currentUser.id, 
         book_id: TEMP_BOOK_ID,
         visibility: 'public' 
     });
