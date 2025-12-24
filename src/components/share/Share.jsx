@@ -86,18 +86,18 @@ const Share = () => {
       <div className="container">
         <div className="top">
           <div className="left">
-    {/* FIX 1: Safely access the avatar_url property */}
-    <img 
-        src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
-        alt="" 
-    />
-    <input 
-        type="text" 
-        placeholder={`What's on your mind ${currentUser?.full_name || currentUser?.username}?`} 
-        onChange={(e)=>setDesc(e.target.value)} 
-        value={desc}
-    />
-</div>
+          {/* FIX 1: Safely access the avatar_url property */}
+            <img 
+                src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
+                alt="" 
+            />
+            <input 
+                type="text" 
+                placeholder={`What's on your mind ${currentUser?.full_name || currentUser?.username}?`} 
+                onChange={(e)=>setDesc(e.target.value)} 
+                value={desc}
+            />
+          </div>
           <div className="right">
             {file && <img className="file" alt="" src={URL.createObjectURL(file)}/>}
           </div>
