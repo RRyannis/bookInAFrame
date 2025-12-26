@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './register.scss';
-import { supabase } from '../../supabaseClient'; // Import Supabase client
+import { supabase } from '../../supabaseClient';
 
 const Register = () => {
 
@@ -9,7 +9,7 @@ const Register = () => {
         username: "",
         email: "",
         password: "",
-        name: "", // Maps to full_name in your profiles table
+        name: "",
     });
 
     const [err, setErr] = useState(null);
