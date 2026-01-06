@@ -10,7 +10,7 @@ async function uploadImage(file, userId) {
 
     // 1. Upload the file to the 'post_images' bucket
     const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('post_images')
+        .from('bookInAFrameStorage')
         .upload(filePath, file, {
             cacheControl: '3600', // How long the browser should cache the image
             upsert: true         // Overwrite if a file with the same name exists

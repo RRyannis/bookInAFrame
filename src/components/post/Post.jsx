@@ -16,7 +16,6 @@ const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // The likes logic is already perfect: reads from 'likes' table
   const { isLoading, error: _error, data: likesData } = useQuery({
     queryKey: ["likes", post.id],
     queryFn: async () => {
@@ -25,7 +24,6 @@ const Post = ({ post }) => {
         console.error("Supabase likes fetch error:", fetchError);
         throw new Error(fetchError.message);
       }
-      // Map to return an array of user IDs
       return supabaseData.map(like => like.userId);
     }
   });
@@ -35,7 +33,6 @@ const Post = ({ post }) => {
 
   const queryClient = useQueryClient();
 
-  // Like/Unlike Mutation is already perfect
   const likeMutation = useMutation({
     mutationFn: async (isCurrentlyLiked) => {
       const currentUserId = currentUser.id;
@@ -43,7 +40,6 @@ const Post = ({ post }) => {
         const { error } = await supabase.from("likes").delete().eq("postId", post.id).eq("userId", currentUserId);
         if (error) throw new Error(error.message);
       } else {
-        // NOTE: The columns in the likes table are 'postId' and 'userId'
         const { error } = await supabase.from("likes").insert({ postId: post.id, userId: currentUserId });
         if (error) throw new Error(error.message);
       }
@@ -53,7 +49,6 @@ const Post = ({ post }) => {
     },
   });
 
-  // Delete Mutation is already perfect
   const deleteMutation = useMutation({
     mutationFn: async (postId) => {
       const { error } = await supabase.from("posts").delete().eq("id", postId);
@@ -77,22 +72,18 @@ const Post = ({ post }) => {
       <div className="container">
         <div className="user">
           <div className="userInfo">
-            {/* FIX: Accessing author profile data from the 'profile' object */}
             <img src={post.profile.avatar_url} alt="" />
             <div className="details">
               <Link
                 to={`/profile/${post.user_id}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                {/* FIX: Use the joined full_name or username */}
                 <span className="name">{post.profile.full_name || post.profile.username}</span>
               </Link>
-              {/* The 'created_at' column is correct for moment */}
               <span className="date">{moment(post.created_at).fromNow()}</span>
             </div>
           </div>
           <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
-          {/* FIX: Use post.user_id for comparison */}
           {(menuOpen && post.user_id === currentUserId) && <button onClick={handleDelete}>delete</button>}
         </div>
         <div className="content">

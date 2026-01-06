@@ -22,11 +22,13 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log("Login attempt with:", inputs);
         try {
             await login(inputs);
+            console.log("Login successful, navigating...");
             navigate("/");
         } catch (error) {
-            // FIX: Access the error message directly from the thrown error object
+            console.error("Login error:", error);
             setErr(error.message || "Login failed. Please check your credentials.");
         }
     };
@@ -47,12 +49,12 @@ const Login = () => {
                 </div>
                 <div className="right">
                     <h1>Login</h1>
-                    <form>
+                    <form onSubmit={handleLogin}>
                         {/* FIX: Input changed to email */}
-                        <input type="email" placeholder='Email' name="email" onChange={handleChange}/>
-                        <input type="password" placeholder='Password' name="password" onChange={handleChange}/>
+                        <input type="email" placeholder='Email' name="email" onChange={handleChange} required/>
+                        <input type="password" placeholder='Password' name="password" onChange={handleChange} required/>
                         {err && <div style={{ color: "red" }}>{err}</div>}
-                        <button onClick={handleLogin}>Login</button>
+                        <button type="submit">Login</button>
                     </form>
                 </div>
             </div>

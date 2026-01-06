@@ -1,5 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Navbar from "./components/navbar/Navbar";
@@ -13,45 +12,53 @@ import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-function App() {
+const queryClient = new QueryClient();
 
-  const { currentUser } = useContext(AuthContext);
-
-  const {darkMode} = useContext(DarkModeContext);
-
-  const queryClient = new QueryClient()
-
-  const Layout = () => {
-    return(
-      <QueryClientProvider client={queryClient}>
-        <div className={`theme-${darkMode ? "dark" : "light"}`}>
-          <Navbar />
-          <div style={{ display: "flex" }}> 
-            <LeftBar />
-            <div style={{ flex: 6 }}>
-              <Outlet />
-            </div>
-            <RightBar />
+const Layout = () => {
+  const { darkMode } = useContext(DarkModeContext);
+  
+  return(
+    <QueryClientProvider client={queryClient}>
+      <div className={`theme-${darkMode ? "dark" : "light"}`}>
+        <Navbar />
+        <div style={{ display: "flex" }}> 
+          <LeftBar />
+          <div style={{ flex: 6 }}>
+            <Outlet /> 
           </div>
+          <RightBar />
         </div>
-      </QueryClientProvider>
-    );
-  }
-  const ProtectedRoute  = ({children}) => {
-    if (!currentUser){
-      return <Navigate to="/login" /> ;
-    }
-    return children;
-  }
+      </div>
+    </QueryClientProvider>
+  );
+}
 
+const ProtectedRoute = ({children}) => {
+  const { currentUser, loading } = useContext(AuthContext); 
+  
+  if (loading) {
+    return <div style={{padding: '50px', textAlign: 'center'}}>Loading Session...</div>; 
+  }
+  
+  if (!currentUser){
+    return <Navigate to="/login" /> ;
+  }
+  
+  return children;
+}
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}> */}
-        <Route path="/" element={<Layout />}>
+        <Route 
+            path="/" 
+            element={<ProtectedRoute><Layout /></ProtectedRoute>}
+        >
           <Route index element={<Home />} />
           <Route path="profiles/:id" element={<Profile />} />
         </Route>
+        
         <Route path="/login" element={<Login />}/>
         <Route path="/register" element={<Register />}/>
       </Routes>
