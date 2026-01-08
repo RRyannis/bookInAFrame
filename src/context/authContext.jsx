@@ -64,28 +64,55 @@ export const AuthContextProvider = ({ children }) => {
         setCurrentUser(null);
     };
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                console.log("Auth state changed:", event, session);
-                
-                if (session) {
-                    const userId = session.user.id;
-                    const profileData = await getProfile(userId);
-                    
-                    const combinedUser = {
-                        ...session.user,
-                        ...profileData,
-                        id: userId,
-                    };
-                    setCurrentUser(combinedUser);
-                } else {
-                    setCurrentUser(null);
+        let subscription;
+
+        (async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                console.log("Initial session:", session);
+
+                if (!session) {
+                    // Remove any stale Supabase auth keys from localStorage which
+                    // can cause the client to hold on to an invalid/expired session.
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.startsWith("supabase.auth")) keysToRemove.push(key);
+                    }
+                    keysToRemove.forEach((k) => {
+                        console.log("Removing stale localStorage key:", k);
+                        localStorage.removeItem(k);
+                    });
                 }
-                setLoading(false);
+            } catch (err) {
+                console.error("Error checking initial Supabase session:", err);
             }
-        );
+
+            const { data } = supabase.auth.onAuthStateChange(
+                async (event, session) => {
+                    console.log("Auth state changed:", event, session);
+
+                    if (session) {
+                        const userId = session.user.id;
+                        const profileData = await getProfile(userId);
+
+                        const combinedUser = {
+                            ...session.user,
+                            ...profileData,
+                            id: userId,
+                        };
+                        setCurrentUser(combinedUser);
+                    } else {
+                        setCurrentUser(null);
+                    }
+                    setLoading(false);
+                }
+            );
+            subscription = data?.subscription;
+        })();
+
         return () => {
-            subscription.unsubscribe();
+            if (subscription) subscription.unsubscribe();
         };
     }, []);
     return (
