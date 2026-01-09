@@ -32,16 +32,25 @@ const Post = ({ post }) => {
   const currentUserId = currentUser?.id;
 
   const queryClient = useQueryClient();
-
+//to do next: it's possible to register 2 likes if you click the button fast enough, should get fixed
   const likeMutation = useMutation({
     mutationFn: async (isCurrentlyLiked) => {
-      const currentUserId = currentUser.id;
+      if (!currentUserId) {
+        throw new Error("User not authenticated");
+      }
+      console.log("Like mutation: userId =", currentUserId, "postId =", post.id, "isLiked =", isCurrentlyLiked);
       if (isCurrentlyLiked) {
         const { error } = await supabase.from("likes").delete().eq("postId", post.id).eq("userId", currentUserId);
-        if (error) throw new Error(error.message);
+        if (error) {
+          console.error("Like delete error:", error);
+          throw new Error(error.message);
+        }
       } else {
         const { error } = await supabase.from("likes").insert({ postId: post.id, userId: currentUserId });
-        if (error) throw new Error(error.message);
+        if (error) {
+          console.error("Like insert error:", error);
+          throw new Error(error.message);
+        }
       }
     },
     onSuccess: () => {
