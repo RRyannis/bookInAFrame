@@ -32,8 +32,8 @@ const Post = ({ post }) => {
   const currentUserId = currentUser?.id;
 
   const queryClient = useQueryClient();
-//to do next: it's possible to register 2 likes if you click the button fast enough, should get fixed
-  const likeMutation = useMutation({
+
+  const { mutate: toggleLikeMutation, isPending } = useMutation({
     mutationFn: async (isCurrentlyLiked) => {
       if (!currentUserId) {
         throw new Error("User not authenticated");
@@ -69,7 +69,7 @@ const Post = ({ post }) => {
   });
 
   const handleLike = () => {
-    likeMutation.mutate(likesData?.includes(currentUserId));
+    toggleLikeMutation(likesData?.includes(currentUserId));
   };
 
   const handleDelete = () => {
@@ -101,10 +101,18 @@ const Post = ({ post }) => {
         </div>
         <div className="info">
           <div className="item">
-            {isLoading ? "loading" : likesData.includes(currentUserId) ? (
-              <FavoriteOutlinedIcon style={{ color: "blue" }} onClick={handleLike} />
-            ) : (
-              <FavoriteBorderOutlinedIcon onClick={handleLike} />
+            {isLoading ? "loading" : (
+              <button
+                onClick={handleLike}
+                disabled={isPending}
+                className="likeButton"
+              >
+                {likesData.includes(currentUserId) ? (
+                  <FavoriteOutlinedIcon style={{ color: "blue" }} />
+                ) : (
+                  <FavoriteBorderOutlinedIcon />
+                )}
+              </button>
             )}
             {likesData?.length || 0} Likes
           </div>

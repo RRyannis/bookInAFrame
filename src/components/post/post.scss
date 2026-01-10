@@ -42,7 +42,7 @@
             }
           }
         }
-        button{
+        button {
           position: absolute;
           top: 30px;
           right: 0;
@@ -76,6 +76,27 @@
           gap: 10px;
           cursor: pointer;
           font-size: 14px;
+          
+          /* === STYLES ADDED FOR THE NEW LIKE BUTTON === */
+          button.likeButton {
+            // Reset browser default button styles
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            // Inherit the container's font color
+            color: inherit; 
+            cursor: pointer;
+            // Ensures the icon is vertically centered
+            display: flex; 
+            align-items: center;
+
+            &:disabled {
+              cursor: wait !important;
+              opacity: 0.6; // Visual feedback that it's processing
+            }
+          }
+          // The old cursor: pointer is now primarily handled by the button
         }
       }
     }
