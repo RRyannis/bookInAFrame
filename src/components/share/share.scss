@@ -50,6 +50,32 @@
         }
         
       }
+      .book-details-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; // Vertical spacing between the inputs
+        padding: 10px 0; // Padding to separate from the top and bottom sections
+
+        h3 {
+          font-size: 14px;
+          color: themed("textColorSoft"); // Use a slightly softer color for the title
+          margin-bottom: 5px;
+        }
+
+        input {
+          border: 1px solid themed("border"); // Subtle border
+          border-radius: 5px;
+          padding: 8px 12px;
+          background-color: themed("inputBg"); // Define an input background color or use themed("bg")
+          color: themed("textColor");
+          font-size: 14px; // Smaller font size for book details vs. main caption
+          width: 100%;
+
+          &::placeholder {
+            color: themed("textColorSoft");
+          }
+        }
+      }
 
       hr {
         margin: 20px 0px;
