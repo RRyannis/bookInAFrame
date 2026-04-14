@@ -1,73 +1,90 @@
 import "./profile.scss";
-import FacebookTwoToneIcon from "@mui/icons-material/FacebookTwoTone";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import PinterestIcon from "@mui/icons-material/Pinterest";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import PlaceIcon from "@mui/icons-material/Place";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts";
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import Update from "../../components/update/Update";
+import { supabase } from "../../supabaseClient";
 
 const Profile = () => {
-
   const [openUpdate, setOpenUpdate] = useState(false);
-
-  const {currentUser} = useContext(AuthContext)
-
-  const userId = parseInt(useLocation().pathname.split("/")[2]);
-
-  const { isLoading, error, data } = useQuery({
-      queryKey: ["user", userId],
-      queryFn: async () => {
-        const res = await makeRequest.get("/users/find/" + userId);
-        return res.data;
-      }
-  });
-
-   const { isLoading: rIsLoading, data: relationshipData } = useQuery({
-      queryKey: ["relationship"],
-      queryFn: async () => {
-        const res = await makeRequest.get("/relationships?followedUserId=" + userId);
-        return res.data;
-      }
-  });
-
-  console.log(relationshipData);
-
+  const { currentUser } = useContext(AuthContext);
+  const { username } = useParams();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: (following)=>{
-      if (following) return makeRequest.delete("/relationships?userId=" + userId);
-      return makeRequest.post("/relationships", { userId});
+  // Fetch profile by username
+  const { isLoading, data: profileData } = useQuery({
+    queryKey: ["profile", username],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, full_name, avatar_url, cover_url, website")
+        .eq("username", username)
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    }
+  });
+
+  // Fetch relationship
+  const { data: relationshipData } = useQuery({
+    queryKey: ["relationship", profileData?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("relationships")
+        .select("id")
+        .eq("followerUserId", currentUser.id)
+        .eq("followedUserId", profileData.id)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    enabled: !!profileData?.id && !!currentUser?.id
+  });
+
+  const isFollowing = !!relationshipData;
+  const isOwnProfile = currentUser?.id === profileData?.id;
+
+  // Follow / unfollow mutation
+  const { mutate: toggleFollow } = useMutation({
+    mutationFn: async () => {
+      if (isFollowing) {
+        const { error } = await supabase
+          .from("relationships")
+          .delete()
+          .eq("followerUserId", currentUser.id)
+          .eq("followedUserId", profileData.id);
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await supabase
+          .from("relationships")
+          .insert({ followerUserId: currentUser.id, followedUserId: profileData.id });
+        if (error) throw new Error(error.message);
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["relationship"])
-    },
-  })
+      queryClient.invalidateQueries({ queryKey: ["relationship", profileData?.id] });
+    }
+  });
 
-  const handleFollow = () => {
-      mutation.mutate(relationshipData.includes(currentUser.id));
-  }
-
+  if (isLoading) return <div style={{ padding: "50px", textAlign: "center" }}>Loading...</div>;
+  if (!profileData) return <div style={{ padding: "50px", textAlign: "center" }}>User not found.</div>;
 
   return (
     <div className="profile">
-      { isLoading ? "loading" : <><div className="images">
+      <div className="images">
         <img
-          src={"/upload/"+data.coverPic}
+          src={profileData.cover_url || "https://images.pexels.com/photos/13916254/pexels-photo-13916254.jpeg"}
           alt=""
           className="cover"
         />
         <img
-          src={"/upload/"+data.profilePic}
+          src={profileData.avatar_url || "https://via.placeholder.com/200"}
           alt=""
           className="profilePic"
         />
@@ -75,38 +92,24 @@ const Profile = () => {
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-            <a href="http://facebook.com">
-              <FacebookTwoToneIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <InstagramIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <TwitterIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <LinkedInIcon fontSize="large" />
-            </a>
-            <a href="http://facebook.com">
-              <PinterestIcon fontSize="large" />
-            </a>
-          </div>
-          <div className="center">
-            <span>{data.name}</span>
-            <div className="info">
-              <div className="item">
-                <PlaceIcon />
-                <span>{data.city}</span>
-              </div>
+            {profileData.website && (
               <div className="item">
                 <LanguageIcon />
-                <span>{data.website}</span>
+                <span>{profileData.website}</span>
+              </div>
+            )}
+          </div>
+          <div className="center">
+            <span>{profileData.full_name || profileData.username}</span>
+            <div className="info">
+              <div className="item">
+                <LanguageIcon />
+                <span>{profileData.website || "—"}</span>
               </div>
             </div>
-            {rIsLoading ? "loading" : userId === currentUser.id ? 
-            (<button onClick={()=>{console.log("clicked update"); setOpenUpdate(true)}}>update</button>) 
-            :
-             <button onClick={handleFollow}>{relationshipData.includes(currentUser.id) ? "following" : "follow "}</button>
+            {isOwnProfile
+              ? <button onClick={() => setOpenUpdate(true)}>Update profile</button>
+              : <button onClick={toggleFollow}>{isFollowing ? "Following" : "Follow"}</button>
             }
           </div>
           <div className="right">
@@ -114,9 +117,9 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-      <Posts userId = {userId}/>
-      </div></>}
-      {openUpdate && <Update setOpenUpdate={setOpenUpdate} user={data}/>}
+        <Posts userId={profileData.id} />
+      </div>
+      {openUpdate && <Update setOpenUpdate={setOpenUpdate} user={profileData} />}
     </div>
   );
 };
