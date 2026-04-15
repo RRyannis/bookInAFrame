@@ -1,77 +1,119 @@
 import "./update.scss";
-import { useState, useContext } from "react";
-import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthContext } from "../../context/authContext";
+import { useState } from "react";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from "../../supabaseClient";
 
 const Update = ({ setOpenUpdate, user }) => {
-
-   
-    const [ cover, setCover] = useState(null);
-    const [ profile, setProfile] = useState(null);
-    const [ texts, setTexts ]= useState({
-        name: "",
-        city: "",
-        website: ""
+    const [cover, setCover] = useState(null);
+    const [profile, setProfile] = useState(null);
+    
+    // Aligned with your actual DB columns: full_name, username, website
+    const [texts, setTexts] = useState({
+        full_name: user?.full_name || "",
+        username: user?.username || "",
+        website: user?.website || "",
     });
 
+    const queryClient = useQueryClient();
+
     const handleChange = (e) => {
-        setTexts((prev) => ({...prev, [e.target.name]: [e.target.value] }));
-    }
+        setTexts((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
-    const upload = async (file) => {
+    // Helper: Supabase Storage Upload
+    const uploadFile = async (file) => {
         try {
-          const formData = new FormData();
-          formData.append("file", file);
-          const res = await makeRequest.post("/upload", formData);
-          return res.data;
+            const fileName = `${Date.now()}_${file.name}`;
+            const { error: uploadError } = await supabase.storage
+                .from('bookInAFrameStorage') 
+                .upload(fileName, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage
+                .from('bookInAFrameStorage')
+                .getPublicUrl(fileName);
+
+            return data.publicUrl;
         } catch (err) {
-          console.log(err);
+            console.error("Upload error:", err);
+            return null;
         }
-      };
+    };
 
-      const queryClient = useQueryClient();
+    // Mutation: Update Profiles Table
+    const mutation = useMutation({
+        mutationFn: async (updatedUser) => {
+            const { error } = await supabase
+                .from("profiles")
+                .update({
+                    ...updatedUser,
+                    updated_at: new Date().toISOString(), // Standard practice
+                })
+                .eq("id", user.id);
 
-  const mutation = useMutation({
-    mutationFn: (user)=>{
-      return makeRequest.put("/users", user);
-    },
-    onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries(["user"])
-    },
-  })
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+            setOpenUpdate(false);
+        },
+    });
 
-  const {currentUser} = useContext(AuthContext)
+    const handleClick = async (e) => {
+        e.preventDefault();
 
-  const handleClick = async (e) => {
-    e.preventDefault();
-    let coverUrl = user.coverPic;
-    let profileUrl = user.profilePic;
+        // Use existing URLs if no new files are selected
+        let coverUrl = cover ? await uploadFile(cover) : user.cover_url;
+        let profileUrl = profile ? await uploadFile(profile) : user.avatar_url;
 
-    coverUrl = cover ? await upload(cover) : user.coverPic;
-    profileUrl = profile ? await upload(profile) : user.profilePic;
-    // if (file) {
-    //   const filename = await upload();
-    //   imgUrl = `http://localhost:8800/upload/${filename}`;
-    // }
-    mutation.mutate({...texts, coverPic: coverUrl, profilePic: profileUrl});
-    setOpenUpdate(false);
-  };
+        mutation.mutate({
+            ...texts,
+            cover_url: coverUrl,
+            avatar_url: profileUrl,
+        });
+    };
 
+    return (
+        <div className="update">
+            <div className="wrapper">
+                <h1>Update Your Profile</h1>
+                <form>
+                    <div className="files">
+                        <label htmlFor="cover">
+                            <span>Cover Picture</span>
+                            <div className="imgContainer">
+                                <img src={cover ? URL.createObjectURL(cover) : user.cover_url} alt="Cover" />
+                            </div>
+                        </label>
+                        <input type="file" id="cover" style={{ display: "none" }} onChange={e => setCover(e.target.files[0])} />
+                        
+                        <label htmlFor="profile">
+                            <span>Profile Picture</span>
+                            <div className="imgContainer">
+                                <img src={profile ? URL.createObjectURL(profile) : user.avatar_url} alt="Profile" />
+                            </div>
+                        </label>
+                        <input type="file" id="profile" style={{ display: "none" }} onChange={e => setProfile(e.target.files[0])} />
+                    </div>
 
-    return(
-        <div className="update">Update
-            <form>
-                <input type="file" onChange={e=>setCover(e.target.files[0])}/>
-                <input type="file" onChange={e=>setProfile(e.target.files[0])}/>
-                <input type="text" name="name" onChange={handleChange}/>
-                <input type="text" name="city" onChange={handleChange}/>
-                <input type="text" name="website" onChange={handleChange}/>
-                <button onClick={handleClick}>Update</button>
-            </form>
-            <button onClick={()=>setOpenUpdate(false)}>X</button>
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" value={texts.full_name} onChange={handleChange} />
+                    
+                    <label>Username</label>
+                    <input type="text" name="username" value={texts.username} onChange={handleChange} />
+                    
+                    <label>Website</label>
+                    <input type="text" name="website" value={texts.website} onChange={handleChange} />
+                    
+                    <button onClick={handleClick} disabled={mutation.isPending}>
+                        {mutation.isPending ? "Updating..." : "Update"}
+                    </button>
+                </form>
+                <button className="close" onClick={() => setOpenUpdate(false)}>X</button>
+            </div>
         </div>
-    )
+    );
 };
 
 export default Update;
