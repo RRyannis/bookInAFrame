@@ -55,14 +55,15 @@ const Register = () => {
 
             // --- STEP 2: Insert the Profile Data into the 'profiles' table ---
             // The 'id' links it to the 'auth.users' table
-            const { error: profileError } = await supabase.from('profiles').insert([
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .upsert([
                 {
-                    id: newUser.id, // Link to the auth user ID
+                    id: newUser.id, 
                     username: username,
                     full_name: name
-                    // avatar_url and website can be null or default
                 }
-            ]);
+                ], { onConflict: 'id' });
 
             if (profileError) {
                 // NOTE: If profile insertion fails, you might want to delete the auth user
