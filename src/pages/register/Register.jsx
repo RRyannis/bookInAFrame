@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './register.scss';
 import { supabase } from '../../supabaseClient';
+//fix issues
 
 const Register = () => {
 
@@ -24,6 +25,7 @@ const Register = () => {
         e.preventDefault();
         setErr(null);
         setIsPending(true);
+        
 
         const { username, email, password, name } = inputs;
 
