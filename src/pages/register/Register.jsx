@@ -52,6 +52,7 @@ const Register = () => {
                 // This happens if email confirmation is required and the user is not signed in immediately
                 alert("Registration successful. Please check your email to confirm your account.");
                 navigate("/login");
+                console.log("User created but email confirmation is required.");
                 return;
             }
 
