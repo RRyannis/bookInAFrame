@@ -55,7 +55,7 @@ const Update = ({ setOpenUpdate, user }) => {
             if (error) throw error;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(["user"]);
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
             setOpenUpdate(false);
         },
     });
@@ -83,7 +83,7 @@ const Update = ({ setOpenUpdate, user }) => {
                         <label htmlFor="cover">
                             <span>Cover Picture</span>
                             <div className="imgContainer">
-                                <img src={cover ? URL.createObjectURL(cover) : user.cover_url} alt="Cover" />
+                                <img src={cover ? URL.createObjectURL(cover) : (user.cover_url || "https://via.placeholder.com/300x100")} alt="Cover" />
                             </div>
                         </label>
                         <input type="file" id="cover" style={{ display: "none" }} onChange={e => setCover(e.target.files[0])} />
@@ -91,7 +91,7 @@ const Update = ({ setOpenUpdate, user }) => {
                         <label htmlFor="profile">
                             <span>Profile Picture</span>
                             <div className="imgContainer">
-                                <img src={profile ? URL.createObjectURL(profile) : user.avatar_url} alt="Profile" />
+                                <img src={profile ? URL.createObjectURL(profile) : (user.avatar_url || "https://via.placeholder.com/100")} alt="Profile" />
                             </div>
                         </label>
                         <input type="file" id="profile" style={{ display: "none" }} onChange={e => setProfile(e.target.files[0])} />
