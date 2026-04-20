@@ -3,14 +3,19 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { DarkModeContextProvider } from './context/darkModeContext.jsx'
 import { AuthContextProvider } from './context/authContext.jsx'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <DarkModeContextProvider>
-     <AuthContextProvider>
-      <App />
-     </AuthContextProvider>
-    </DarkModeContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <DarkModeContextProvider>
+        <AuthContextProvider>
+          <App />
+        </AuthContextProvider>
+      </DarkModeContextProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
-)
+);
 
