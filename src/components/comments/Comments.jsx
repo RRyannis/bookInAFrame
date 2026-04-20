@@ -14,9 +14,13 @@ const Comments = ({ postId }) => {
    const { isLoading, error: _error, data: commentsData } = useQuery({
     queryKey: ["comments", postId],
     queryFn: async () => {
-      const { data: supabaseData, error: fetchError } = await supabase.from("comments").select(`*, 
-            profile:userId (username, avatar_url)
-        `).eq("postId", postId).order('createdAt', { ascending: false });;
+      const { data: supabaseData, error: fetchError } = await supabase.from("comments").select(`
+        *, 
+        profile:profiles!comments_userId_fkey (
+          username, 
+          avatar_url
+        )
+      `).eq("postId", postId).order('created_at', { ascending: false });;
       if(fetchError){
         console.error("Supabase likes fetch error:", fetchError);
         throw new Error(fetchError.message);
@@ -37,8 +41,10 @@ const Comments = ({ postId }) => {
       }
     },
     onSuccess: () => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    // 1. Refresh the comments list
+    queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+    // 2. Refresh the comment count in the Post component!
+    queryClient.invalidateQueries({ queryKey: ["commentCount", postId] });
     },
   })
 
@@ -60,14 +66,14 @@ const Comments = ({ postId }) => {
         <button onClick={handleClick}>Send</button>
       </div>
       { isLoading? "loading" : 
-      commentsData.map((comment) => (
-        <div className="comment">
+      commentsData?.map((comment) => (
+        <div className="comment" key={comment.id}>
           <img src={comment.profile.avatar_url} alt="" />
           <div className="info">
             <span>{comment.profile.username}</span>
             <p>{comment.desc}</p>
           </div>
-          <span className="date">{moment(comment.createdAt).fromNow()}</span>
+          <span className="date">{moment(comment.created_at).fromNow()}</span>
         </div>
       ))}
     </div>

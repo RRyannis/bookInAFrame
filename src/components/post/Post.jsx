@@ -27,6 +27,19 @@ const Post = ({ post }) => {
       return supabaseData.map(like => like.userId);
     }
   });
+  const { data: commentCount, isLoading: commentsLoading } = useQuery({
+    queryKey: ["commentCount", post.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("comments")
+        .select("*", { count: "exact", head: true })
+        .eq("postId", post.id); // Double check if your column is postId or post_id
+
+
+      if (error) throw new Error(error.message);
+      return count || 0;
+    },
+  });
 
   const { currentUser } = useContext(AuthContext);
   const currentUserId = currentUser?.id;
@@ -118,7 +131,7 @@ const Post = ({ post }) => {
           </div>
           <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
             <TextsmsOutlinedIcon />
-            12 Comments
+            {commentsLoading ? "..." : `${commentCount} Comments`}
           </div>
           <div className="item">
             <ShareOutlinedIcon />
@@ -132,38 +145,3 @@ const Post = ({ post }) => {
 };
 
 export default Post;
-
-
-
-
-// const mutation = useMutation(
-//     (liked) => {
-//       if (liked) return makeRequest.delete("/likes?postId=" + post.id);
-//       return makeRequest.post("/likes", { postId: post.id });
-//     },
-//     {
-//       onSuccess: () => {
-//         // Invalidate and refetch
-//         queryClient.invalidateQueries(["likes"]);
-//       },
-//     }
-//   );
-//   const deleteMutation = useMutation(
-//     (postId) => {
-//       return makeRequest.delete("/posts/" + postId);
-//     },
-//     {
-//       onSuccess: () => {
-//         // Invalidate and refetch
-//         queryClient.invalidateQueries(["posts"]);
-//       },
-//     }
-//   );
-
-//   const handleLike = () => {
-//     mutation.mutate(data.includes(currentUser.id));
-//   };
-
-//   const handleDelete = () => {
-//     deleteMutation.mutate(post.id);
-//   };
