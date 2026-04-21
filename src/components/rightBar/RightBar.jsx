@@ -1,6 +1,27 @@
 import "./RightBar.scss";
+import { supabase } from "../../supabaseClient";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useContext } from "react";
+import { AuthContext } from "../../context/authContext";
 
 const RightBar = () =>{
+    const { currentUser } = useContext(AuthContext);
+
+
+    const { data: followingData } = useQuery({
+        queryKey: ["following", currentUser.id],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("relationships")
+                .select("followedUserId")
+                .eq("followerUserId", currentUser.id)
+            if (error) throw new Error(error.message);
+            return data;
+        }
+    });
+
+    const followingIds = followingData.map(r => r.followedUserId);
+
     return(
         <div className="rightBar">
             <div className="container">

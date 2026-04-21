@@ -33,7 +33,7 @@ const Post = ({ post }) => {
       const { count, error } = await supabase
         .from("comments")
         .select("*", { count: "exact", head: true })
-        .eq("postId", post.id); // Double check if your column is postId or post_id
+        .eq("postId", post.id);
 
 
       if (error) throw new Error(error.message);
