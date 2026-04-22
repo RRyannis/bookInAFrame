@@ -20,7 +20,21 @@ const RightBar = () =>{
         }
     });
 
-    const followingIds = followingData.map(r => r.followedUserId);
+    const followingIds = followingData?.map(r => r.followedUserId) || [];
+    const excludeIds = [...followingIds, currentUser.id];
+
+    const { data: notFollowingData } = useQuery({
+        queryKey: ["profiles", excludeIds],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("*")
+                .not("id", "in", `(${excludeIds.join(",")})`)
+            if (error) throw new Error(error.message);
+            return data;
+        },
+        enabled: !!followingData
+    });
 
     return(
         <div className="rightBar">
