@@ -23,7 +23,7 @@ const RightBar = () =>{
     const followingIds = followingData?.map(r => r.followedUserId) || [];
     const excludeIds = [...followingIds, currentUser.id];
 
-    const { data: notFollowingData } = useQuery({
+    const { data: notFollowingData, isLoading: isLoadingNotFollowing } = useQuery({
         queryKey: ["profiles", excludeIds],
         queryFn: async () => {
             const { data, error } = await supabase
@@ -36,103 +36,116 @@ const RightBar = () =>{
         enabled: !!followingData
     });
 
-    return(
-        <div className="rightBar">
-            <div className="container">
-                <div className="item">
-                    <span>Suggestions for you</span>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <span>Jane Doe</span>
-                        </div>
-                        <div className="buttons">
-                            <button>follow</button>
-                            <button>dismiss</button>
-                        </div>
+    return (
+      <div className="rightBar">
+        <div className="container">
+          <div className="item">
+            <span>Suggestions for you</span>
+            {isLoadingNotFollowing
+              ? "Loading suggestions..."
+              : notFollowingData?.map((user) => (
+                  <div className="user" key={user.id}>
+                    <div className="userInfo">
+                      <img
+                        src={user.avatar_url || "/default-avatar.png"}
+                        alt={user.username}
+                      />
+                      <span>{user.full_name || user.username}</span>
                     </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <span>Jane Doe</span>
-                        </div>
-                        <div className="buttons">
-                            <button>follow</button>
-                            <button>dismiss</button>
-                        </div>
+                    <div className="buttons">
+                      <button>follow</button>
+                      <button>dismiss</button>
                     </div>
-                </div>
-                <div className="item">
-                    <span>Latest Activities </span>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <p>
-                                <span>Jane Doe</span> Changed their status
-                            </p>
-                            
-                        </div>
-                       <span>5 min ago</span>
-                    </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <p>
-                                <span>Jane Doe</span> Changed their profile decoration
-                            </p>
-                            
-                        </div>
-                       <span>6 min ago</span>
-                    </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <p>
-                                <span>Jane Doe</span> Changed their work status
-                            </p>
-                            
-                        </div>
-                       <span>7 min ago</span>
-                    </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <p>
-                                <span>Jane Doe</span> Changed their relationship status
-                            </p>
-                            
-                        </div>
-                       <span>8 min ago</span>
-                    </div>
-
-                </div>
-                <div className="item">
-                    <span>Online Friends</span>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <div className="online" />
-                            <span>Jane Doe</span> 
-                        </div>
-                    </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <div className="online" />
-                            <span>Jane Doe</span> 
-                        </div>
-                    </div>
-                    <div className="user">
-                        <div className="userInfo">
-                            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="" />
-                            <div className="online" />
-                            <span>Jane Doe</span> 
-                        </div>
-                    </div>
-                </div>
+                  </div>
+                ))}
+          </div>
+          <div className="item">
+            <span>Latest Activities </span>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <p>
+                  <span>Jane Doe</span> Changed their status
+                </p>
+              </div>
+              <span>5 min ago</span>
             </div>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <p>
+                  <span>Jane Doe</span> Changed their profile decoration
+                </p>
+              </div>
+              <span>6 min ago</span>
+            </div>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <p>
+                  <span>Jane Doe</span> Changed their work status
+                </p>
+              </div>
+              <span>7 min ago</span>
+            </div>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <p>
+                  <span>Jane Doe</span> Changed their relationship status
+                </p>
+              </div>
+              <span>8 min ago</span>
+            </div>
+          </div>
+          <div className="item">
+            <span>Online Friends</span>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <div className="online" />
+                <span>Jane Doe</span>
+              </div>
+            </div>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <div className="online" />
+                <span>Jane Doe</span>
+              </div>
+            </div>
+            <div className="user">
+              <div className="userInfo">
+                <img
+                  src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                  alt=""
+                />
+                <div className="online" />
+                <span>Jane Doe</span>
+              </div>
+            </div>
+          </div>
         </div>
-    )
+      </div>
+    );
 }
 
 export default RightBar;
