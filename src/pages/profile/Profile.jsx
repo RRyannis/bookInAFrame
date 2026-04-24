@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import Update from "../../components/update/Update";
 import { supabase } from "../../supabaseClient";
+import { useFollow } from "../../hooks/useFollow";
 
 const Profile = () => {
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -51,26 +52,27 @@ const Profile = () => {
   const isOwnProfile = currentUser?.id === profileData?.id;
 
   // Follow / unfollow mutation
-  const { mutate: toggleFollow } = useMutation({
-    mutationFn: async () => {
-      if (isFollowing) {
-        const { error } = await supabase
-          .from("relationships")
-          .delete()
-          .eq("followerUserId", currentUser.id)
-          .eq("followedUserId", profileData.id);
-        if (error) throw new Error(error.message);
-      } else {
-        const { error } = await supabase
-          .from("relationships")
-          .insert({ followerUserId: currentUser.id, followedUserId: profileData.id });
-        if (error) throw new Error(error.message);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["relationship", profileData?.id] });
-    }
-  });
+  // const { mutate: toggleFollow } = useMutation({
+  //   mutationFn: async () => {
+  //     if (isFollowing) {
+  //       const { error } = await supabase
+  //         .from("relationships")
+  //         .delete()
+  //         .eq("followerUserId", currentUser.id)
+  //         .eq("followedUserId", profileData.id);
+  //       if (error) throw new Error(error.message);
+  //     } else {
+  //       const { error } = await supabase
+  //         .from("relationships")
+  //         .insert({ followerUserId: currentUser.id, followedUserId: profileData.id });
+  //       if (error) throw new Error(error.message);
+  //     }
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["relationship", profileData?.id] });
+  //   }
+  // });
+  const { toggleFollow, isPending } = useFollow(profileData.id, isFollowing);
 
   if (isLoading) return <div style={{ padding: "50px", textAlign: "center" }}>Loading...</div>;
   if (!profileData) return <div style={{ padding: "50px", textAlign: "center" }}>User not found.</div>;
@@ -109,7 +111,9 @@ const Profile = () => {
             </div>
             {isOwnProfile
               ? <button onClick={() => setOpenUpdate(true)}>Update profile</button>
-              : <button onClick={toggleFollow}>{isFollowing ? "Following" : "Follow"}</button>
+              : <button onClick={toggleFollow} disabled={isPending}>
+                  {isFollowing ? "Following" : "Follow"}
+                </button>
             }
           </div>
           <div className="right">

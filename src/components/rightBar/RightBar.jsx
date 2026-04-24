@@ -3,6 +3,28 @@ import { supabase } from "../../supabaseClient";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/authContext";
+import { useFollow } from "../../hooks/useFollow";
+
+
+// This component handles the hook for each individual user
+const SuggestionUser = ({ user }) => {
+  const { toggleFollow, isPending } = useFollow(user.id, false);
+
+  return (
+    <div className="user">
+      <div className="userInfo">
+        <img src={user.avatar_url || "/default-avatar.png"} alt="" />
+        <span>{user.full_name || user.username}</span>
+      </div>
+      <div className="buttons">
+        <button onClick={() => toggleFollow()} disabled={isPending}>
+          {isPending ? "following..." : "follow"}
+        </button>
+        <button>dismiss</button>
+      </div>
+    </div>
+  );
+};
 
 const RightBar = () =>{
     const { currentUser } = useContext(AuthContext);
@@ -35,6 +57,7 @@ const RightBar = () =>{
         },
         enabled: !!followingData
     });
+   
 
     return (
       <div className="rightBar">
@@ -44,19 +67,7 @@ const RightBar = () =>{
             {isLoadingNotFollowing
               ? "Loading suggestions..."
               : notFollowingData?.map((user) => (
-                  <div className="user" key={user.id}>
-                    <div className="userInfo">
-                      <img
-                        src={user.avatar_url || "/default-avatar.png"}
-                        alt={user.username}
-                      />
-                      <span>{user.full_name || user.username}</span>
-                    </div>
-                    <div className="buttons">
-                      <button>follow</button>
-                      <button>dismiss</button>
-                    </div>
-                  </div>
+                  <SuggestionUser key={user.id} user={user} />
                 ))}
           </div>
           <div className="item">
