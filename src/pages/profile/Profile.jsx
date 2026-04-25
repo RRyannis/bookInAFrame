@@ -4,7 +4,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
@@ -16,7 +16,6 @@ const Profile = () => {
   const [openUpdate, setOpenUpdate] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const { username } = useParams();
-  const queryClient = useQueryClient();
 
   // Fetch profile by username
   const { isLoading, data: profileData } = useQuery({
@@ -51,28 +50,8 @@ const Profile = () => {
   const isFollowing = !!relationshipData;
   const isOwnProfile = currentUser?.id === profileData?.id;
 
-  // Follow / unfollow mutation
-  // const { mutate: toggleFollow } = useMutation({
-  //   mutationFn: async () => {
-  //     if (isFollowing) {
-  //       const { error } = await supabase
-  //         .from("relationships")
-  //         .delete()
-  //         .eq("followerUserId", currentUser.id)
-  //         .eq("followedUserId", profileData.id);
-  //       if (error) throw new Error(error.message);
-  //     } else {
-  //       const { error } = await supabase
-  //         .from("relationships")
-  //         .insert({ followerUserId: currentUser.id, followedUserId: profileData.id });
-  //       if (error) throw new Error(error.message);
-  //     }
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["relationship", profileData?.id] });
-  //   }
-  // });
-  const { toggleFollow, isPending } = useFollow(profileData.id, isFollowing);
+  
+  const { toggleFollow, isPending } = useFollow(profileData?.id, isFollowing);
 
   if (isLoading) return <div style={{ padding: "50px", textAlign: "center" }}>Loading...</div>;
   if (!profileData) return <div style={{ padding: "50px", textAlign: "center" }}>User not found.</div>;
