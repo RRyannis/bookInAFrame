@@ -25,6 +25,18 @@ const SuggestionUser = ({ user }) => {
     </div>
   );
 };
+//component to handle the popular books section
+const PopBook = ({ book }) => {
+  return (
+    <div className="book">
+      <div className="bookInfo">
+        <img src={book.thumbnail_url || "/default-book-cover.png"} alt="" />
+        <span>{book.title}</span>
+        <span>{book.authors?.join(", ")}</span>
+      </div>
+    </div>
+  );
+};
 
 const RightBar = () =>{
     const { currentUser } = useContext(AuthContext);
@@ -57,6 +69,17 @@ const RightBar = () =>{
         },
         enabled: !!followingData
     });
+
+    const { data: popularBooksData, isLoading: isLoadingPopularBooks } = useQuery({
+        queryKey: ["popularBooks"],
+        queryFn: async () => { 
+          const { data, error } = await supabase
+            .from("popular_books")
+            .select("*")
+          if (error) throw new Error(error.message);
+            return data;
+        }
+      });
    
 
     return (
@@ -71,6 +94,14 @@ const RightBar = () =>{
                 ))}
           </div>
           <div className="item">
+            <span>Popular Books</span>
+            {isLoadingPopularBooks 
+              ? "Loading..." 
+              : popularBooksData?.map((book) => (
+                <PopBook book={book} key={book.id} />
+            ))}
+          </div>
+          {/* <div className="item">
             <span>Latest Activities </span>
             <div className="user">
               <div className="userInfo">
@@ -120,8 +151,8 @@ const RightBar = () =>{
               </div>
               <span>8 min ago</span>
             </div>
-          </div>
-          <div className="item">
+          </div> */}
+          {/* <div className="item">
             <span>Online Friends</span>
             <div className="user">
               <div className="userInfo">
@@ -153,7 +184,7 @@ const RightBar = () =>{
                 <span>Jane Doe</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     );
