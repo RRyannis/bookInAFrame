@@ -37,10 +37,9 @@ const Login = () => {
         <div className='login'>
             <div className="card">
                 <div className="left">
-                    <h1>Hello World.</h1>
+                    <h1>bookInAFrame</h1>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        Post your favorite book "frames" of books that you loved! See your friends' favorites and gush about them together!
                     </p>
                     <span>Don't you have an account?</span>
                     <Link to="/register">

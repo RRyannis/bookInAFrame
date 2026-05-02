@@ -103,10 +103,10 @@ const Register = () => {
                     </form>
                 </div>
                 <div className="right">
-                    <h1>BookSocial</h1>
+                    <h1>bookInAFrame</h1>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        An app to share your favorite book moments and quotes in the form of a "frame". Discover new exciting books and
+                        nerd out over your favorite moments in literature!
                     </p>
                     <span>Do you have an account?</span>
                     <Link to="/login">
