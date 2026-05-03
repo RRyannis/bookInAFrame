@@ -1,103 +1,57 @@
 import "./leftBar.scss";
-import Friends from "../../assets/1.png";
-import Groups from "../../assets/2.png";
-import Market from "../../assets/3.png";
-import Watch from "../../assets/4.png";
-import Memories from "../../assets/5.png";
-import Events from "../../assets/6.png";
-import Gaming from "../../assets/7.png";
-import Gallery from "../../assets/8.png";
-import Videos from "../../assets/9.png";
-import Messages from "../../assets/10.png";
-import Tutorials from "../../assets/11.png";
-import Courses from "../../assets/12.png";
-import Fund from "../../assets/13.png";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
+import { Link } from "react-router-dom";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
+import BookmarkBorderOutlinedIcon from "@mui/icons-material/BookmarkBorderOutlined";
 
-const LeftBar = () =>{
-
+const LeftBar = () => {
     const { currentUser } = useContext(AuthContext);
 
-    return(
+    return (
         <div className="leftBar">
             <div className="container">
-                <div className="menu">
+                <Link to={`/profiles/${currentUser?.username}`} style={{ textDecoration: "none" }}>
                     <div className="user">
-    <img
-        // FIX: Add optional chaining and a fallback image URL
-        src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
-        alt=""
-    />
-    <span className="name">
-        {/* FIX: Add optional chaining for safe property access */}
-        {currentUser?.full_name || currentUser?.username}
-    </span>
-</div>
-                    <div className="item">
-                        <img src={Friends} alt="" />
-                        <span>Friends</span>
+                        <img
+                            src={currentUser?.avatar_url || "/default-avatar.png"}
+                            alt=""
+                        />
+                        <span>{currentUser?.full_name || currentUser?.username}</span>
                     </div>
-                    <div className="item">
-                        <img src={Groups} alt="" />
-                        <span>Groups</span>
-                    </div>
-                    {/* <div className="item">
-                        <img src={Market} alt="" />
-                        <span>Marketplace</span>
-                    </div> */}
-                    {/* <div className="item">
-                        <img src={Watch} alt="" />
-                        <span>Watch</span>
-                    </div> */}
-                    {/* <div className="item">
-                        <img src={Memories} alt="" />
-                        <span>Memories</span>
-                    </div> */}
-                </div>
-                <hr/>
+                </Link>
+                <hr />
                 <div className="menu">
-                    <span>Your Shortcuts</span>
-                    <div className="item">
-                        <img src={Events} alt="" />
-                        <span>Events</span>
-                    </div>
-                    {/* <div className="item">
-                        <img src={Gaming} alt="" />
-                        <span>Gaming</span>
-                    </div> */}
-                    <div className="item">
-                        <img src={Gallery} alt="" />
-                        <span>Gallery</span>
-                    </div>
-                    {/* <div className="item">
-                        <img src={Videos} alt="" />
-                        <span>Videos</span>
-                    </div> */}
-                    <div className="item">
-                        <img src={Messages} alt="" />
-                        <span>Messages</span>
-                    </div>
+                    <Link to="/" style={{ textDecoration: "none" }}>
+                        <div className="item">
+                            <HomeOutlinedIcon />
+                            <span>Home</span>
+                        </div>
+                    </Link>
+                    <Link to="/explore" style={{ textDecoration: "none" }}>
+                        <div className="item">
+                            <ExploreOutlinedIcon />
+                            <span>Explore</span>
+                        </div>
+                    </Link>
+                    <Link to={`/profiles/${currentUser?.username}`} style={{ textDecoration: "none" }}>
+                        <div className="item">
+                            <PersonOutlineOutlinedIcon />
+                            <span>Profile</span>
+                        </div>
+                    </Link>
+                    <Link to="/bookmarks" style={{ textDecoration: "none" }}>
+                        <div className="item">
+                            <BookmarkBorderOutlinedIcon />
+                            <span>Bookmarks</span>
+                        </div>
+                    </Link>
                 </div>
-                <hr/>
-                {/* <div className="menu">
-                    <span>Other</span>
-                     <div className="item">
-                        <img src={Tutorials} alt="" />
-                        <span>Tutorials</span>
-                    </div>
-                     <div className="item">
-                        <img src={Courses} alt="" />
-                        <span>Courses</span>
-                    </div>
-                     <div className="item">
-                        <img src={Fund} alt="" />
-                        <span>Fund</span>
-                    </div>
-                </div> */}
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default LeftBar;
