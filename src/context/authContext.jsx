@@ -16,7 +16,6 @@ export const AuthContextProvider = ({ children }) => {
             .from('profiles').select('id, username, avatar_url, full_name').eq('id', userId).single();
 
         if (error) {
-            console.error("Error fetching user profile:", error);
             return { id: userId }; 
         }
 
@@ -31,18 +30,14 @@ export const AuthContextProvider = ({ children }) => {
             password: inputs.password,
         });
 
-        console.log("Supabase response:", { data, error });
-
         if (error) {
             setLoading(false);
-            console.error("Supabase Login Error:", error.message);
             throw new Error(error.message);
         }
 
         console.log("Login successful, fetching profile...");
         const userId = data.user.id;
         const profileData = await getProfile(userId);
-        console.log("Profile fetched:", profileData);
         
         const combinedUser = {
             ...data.user,
@@ -52,13 +47,11 @@ export const AuthContextProvider = ({ children }) => {
         setCurrentUser(combinedUser);
         setLoading(false);
         
-        console.log("Login complete, currentUser set:", combinedUser);
         return data;
     };
     const logout = async () => {
         const { error } = await supabase.auth.signOut();
         if (error) {
-            console.error("Supabase Logout Error:", error.message);
             throw new Error(error.message);
         }
         setCurrentUser(null);
@@ -69,29 +62,23 @@ export const AuthContextProvider = ({ children }) => {
         (async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
-                console.log("Initial session:", session);
 
                 if (!session) {
-                    // Remove any stale Supabase auth keys from localStorage which
-                    // can cause the client to hold on to an invalid/expired session.
                     const keysToRemove = [];
                     for (let i = 0; i < localStorage.length; i++) {
                         const key = localStorage.key(i);
                         if (key && key.startsWith("supabase.auth")) keysToRemove.push(key);
                     }
                     keysToRemove.forEach((k) => {
-                        console.log("Removing stale localStorage key:", k);
                         localStorage.removeItem(k);
                     });
                 }
             } catch (err) {
-                console.error("Error checking initial Supabase session:", err);
+                throw new Error("Error checking session: " + err.message);
             }
 
             const { data } = supabase.auth.onAuthStateChange(
                 async (event, session) => {
-                    console.log("Auth state changed:", event, session);
-
                     if (session) {
                         const userId = session.user.id;
                         const profileData = await getProfile(userId);
