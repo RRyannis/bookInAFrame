@@ -17,7 +17,6 @@ const Profile = () => {
   const { currentUser } = useContext(AuthContext);
   const { username } = useParams();
 
-  // Fetch profile by username
   const { isLoading, data: profileData } = useQuery({
     queryKey: ["profile", username],
     queryFn: async () => {
@@ -31,7 +30,6 @@ const Profile = () => {
     }
   });
 
-  // Fetch relationship
   const { data: relationshipData } = useQuery({
     queryKey: ["relationship", profileData?.id],
     queryFn: async () => {
@@ -100,7 +98,7 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-        <Posts userId={profileData.id} />
+        <Posts userId={profileData.id} emptyMessage="This user hasn't shared any passages yet."/>
       </div>
       {openUpdate && <Update setOpenUpdate={setOpenUpdate} user={profileData} />}
     </div>

@@ -3,7 +3,7 @@ import './posts.scss';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "../../supabaseClient";
 
-const Posts = ({userId}) => {
+const Posts = ({userId, emptyMessage = "No posts yet. Be the first to share a passage!"}) => {
 
 const { isLoading, error, data: postsData } = useQuery({
   queryKey: ["posts", userId],
@@ -33,7 +33,14 @@ const { isLoading, error, data: postsData } = useQuery({
 return (
   <div className="posts">
     {error ? "Something went wrong!" :
-      (isLoading ? "is loading" : postsData?.map((post) => (
+      (isLoading ? "is loading" :
+        postsData?.length == 0 ?
+        (
+          <div className="emptyState">
+            <p>{emptyMessage}</p>
+          </div>
+        ) :
+        postsData?.map((post) => (
         <Post post={post} key={post.id}/>
       )))}
   </div>
