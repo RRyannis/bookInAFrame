@@ -41,6 +41,7 @@ const Register = () => {
                 email: email,
                 password: password,
             });
+            console.log(authData)
 
             if (authError) {
                 // Handle auth specific errors (e.g., weak password, user already registered)

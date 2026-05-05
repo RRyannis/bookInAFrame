@@ -6,6 +6,7 @@ import LeftBar from "./components/leftbar/Leftbar";
 import RightBar from "./components/rightBar/RightBar";
 import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
+import Explore from "./pages/explore/Explore";
 import "../src/styles/style.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
@@ -56,6 +57,7 @@ function App() {
         
         <Route path="/login" element={<Login />}/>
         <Route path="/register" element={<Register />}/>
+        <Route path="/explore" element={<Explore />}/>
       </Routes>
     </BrowserRouter>
   )

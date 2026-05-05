@@ -31,7 +31,7 @@ const PopBook = ({ book }) => {
     <div className="book">
       <div className="bookInfo">
         <img src={book.thumbnail_url || "/default-book-cover.png"} alt="" />
-        <span>{book.title}</span>
+        <span>{book.title} </span>
         <span>{book.authors?.join(", ")}</span>
       </div>
     </div>
