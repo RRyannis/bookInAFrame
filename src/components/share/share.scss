@@ -36,6 +36,9 @@
           width: 60%;
           color: themed("textColor");
         }
+         &::placeholder {
+        color: themed("textColorSoft");
+        }
         }
         .right{
           flex: 1;
@@ -70,6 +73,7 @@
           color: themed("textColor");
           font-size: 14px; // Smaller font size for book details vs. main caption
           width: 100%;
+          box-sizing: border-box;
 
           &::placeholder {
             color: themed("textColorSoft");

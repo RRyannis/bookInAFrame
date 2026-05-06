@@ -23,7 +23,6 @@ export const AuthContextProvider = ({ children }) => {
     };
     const login = async (inputs) => {
         setLoading(true);
-        console.log("Login function called with:", inputs);
         
         const { data, error } = await supabase.auth.signInWithPassword({
             email: inputs.email,
@@ -35,7 +34,6 @@ export const AuthContextProvider = ({ children }) => {
             throw new Error(error.message);
         }
 
-        console.log("Login successful, fetching profile...");
         const userId = data.user.id;
         const profileData = await getProfile(userId);
         
@@ -74,11 +72,17 @@ export const AuthContextProvider = ({ children }) => {
                     });
                 }
             } catch (err) {
-                throw new Error("Error checking session: " + err.message);
+                console.error("Error checking session:", err);
+                setLoading(false);
             }
 
             const { data } = supabase.auth.onAuthStateChange(
                 async (event, session) => {
+                    if (event === 'SIGNED_UP') {
+                        setLoading(false);
+                        return;
+                    }
+                    
                     if (session) {
                         const userId = session.user.id;
                         const profileData = await getProfile(userId);

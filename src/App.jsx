@@ -53,11 +53,11 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path="profiles/:username" element={<Profile />} />
+          <Route path="explore" element={<Explore />}/>
         </Route>
         
         <Route path="/login" element={<Login />}/>
         <Route path="/register" element={<Register />}/>
-        <Route path="/explore" element={<Explore />}/>
       </Routes>
     </BrowserRouter>
   )
