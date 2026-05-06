@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useFollow } from "../../hooks/useFollow";
+import GoogleBooks from "../googleBooks/GoogleBooks";
 
 
 // This component handles the hook for each individual user
@@ -94,14 +95,18 @@ const RightBar = () =>{
                   <SuggestionUser key={user.id} user={user} />
                 ))}
           </div>
-          <div className="item">
+          {/* <div className="item">
             <span>Popular Books</span>
             {isLoadingPopularBooks 
               ? "Loading..." 
               : popularBooksData?.map((book) => (
                 <PopBook book={book} key={book.id} />
             ))}
-          </div>
+          </div> */}
+          <div className="item">
+            <span>Discover Books</span>
+            <GoogleBooks />
+        </div>
         </div>
       </div>
     );
