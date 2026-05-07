@@ -33,7 +33,7 @@ const Navbar = () =>{
           <Link to="/" style={{ textDecoration: "none" }}>
             <span>bookInAFrame</span>
           </Link>
-          <HomeOutlinedIcon />
+          <HomeOutlinedIcon strokeWidth={1} />
           {darkMode ? (
             <WbSunnyOutlinedIcon onClick={toggle} />
           ) : (
@@ -46,9 +46,9 @@ const Navbar = () =>{
           </div>
         </div>
         <div className="right">
-          <PersonOutlineOutlinedIcon />
-          <EmailOutlinedIcon />
-          <NotificationsOutlinedIcon />
+          <PersonOutlineOutlinedIcon sx={{ fontSize: 22, "& path": { strokeWidth: 0.2 } }}/>
+          <EmailOutlinedIcon sx={{ fontSize: 22, "& path": { strokeWidth: 0.2 } }}/>
+          <NotificationsOutlinedIcon sx={{ fontSize: 22, "& path": { strokeWidth: 0.2 } }}/>
           <div className="user">
             <img
               src={currentUser?.avatar_url || "default_placeholder_image_url"}
