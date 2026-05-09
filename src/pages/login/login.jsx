@@ -37,7 +37,7 @@ const Login = () => {
         <div className='login'>
             <div className="card">
                 <div className="left">
-                    <h1>bookInAFrame</h1>
+                    <h1>BookInAFrame</h1>
                     <p>
                         Post your favorite book "frames" of books that you loved! See your friends' favorites and gush about them together!
                     </p>

@@ -104,7 +104,7 @@ const Register = () => {
                     </form>
                 </div>
                 <div className="right">
-                    <h1>bookInAFrame</h1>
+                    <h1>BookInAFrame</h1>
                     <p>
                         An app to share your favorite book moments and quotes in the form of a "frame". Discover new exciting books and
                         nerd out over your favorite moments in literature!
