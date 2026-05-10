@@ -6,8 +6,6 @@ import { AuthContext } from "../../context/authContext";
 import { useFollow } from "../../hooks/useFollow";
 import GoogleBooks from "../googleBooks/GoogleBooks";
 
-
-// This component handles the hook for each individual user
 const SuggestionUser = ({ user }) => {
   const { toggleFollow, isPending } = useFollow(user.id, false);
 
@@ -26,7 +24,7 @@ const SuggestionUser = ({ user }) => {
     </div>
   );
 };
-//component to handle the popular books section
+
 const PopBook = ({ book }) => {
   return (
     <div className="book">
