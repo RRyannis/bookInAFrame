@@ -1,4 +1,4 @@
-import "./RightBar.scss";
+import "./rightBar.scss";
 import { supabase } from "../../supabaseClient";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useContext } from "react";
