@@ -41,9 +41,7 @@ const Comments = ({ postId }) => {
       }
     },
     onSuccess: () => {
-    // 1. Refresh the comments list
     queryClient.invalidateQueries({ queryKey: ["comments", postId] });
-    // 2. Refresh the comment count in the Post component!
     queryClient.invalidateQueries({ queryKey: ["commentCount", postId] });
     },
   })

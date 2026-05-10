@@ -95,14 +95,6 @@ const RightBar = () =>{
                   <SuggestionUser key={user.id} user={user} />
                 ))}
           </div>
-          {/* <div className="item">
-            <span>Popular Books</span>
-            {isLoadingPopularBooks 
-              ? "Loading..." 
-              : popularBooksData?.map((book) => (
-                <PopBook book={book} key={book.id} />
-            ))}
-          </div> */}
           <div className="item">
             <span>Discover Books</span>
             <GoogleBooks />

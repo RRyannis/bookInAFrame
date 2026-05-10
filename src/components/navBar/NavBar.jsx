@@ -13,6 +13,7 @@ import { DarkModeContext } from "../../context/darkModeContext.jsx";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { LogOut } from 'lucide-react';
 
 
 
@@ -56,8 +57,8 @@ const Navbar = () =>{
             />
             <span>{currentUser?.full_name || currentUser?.username}</span>
           </div>
+          <LogOut onClick={handleLogout} className="logout-icon" />
         </div>
-        <button onClick={handleLogout}>Logout</button>
       </div>
     );
 }

@@ -1,17 +1,18 @@
-# React + Vite
+# BookInAFrame
+An amalgamation of inspirations from pinterest, x and letterboxd that aims to be a place for people to discuss their favorite books and book quotes.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Link to project:** http://recruiters-love-seeing-live-demos.com/
 
-Currently, two official plugins are available:
+![alt tag](http://placecorgi.com/1200/650)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How It's Made:
 
-## React Compiler
+**Tech used:** HTML, CSS, JavaScript, React, Supabase
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Initially it was going to be a pretty standard mern project but with mysql instead of mongo. At some point when I was randomly looking into deployment for a full stack app, I came to the realization that it seemed like a pain to manage. Thus I figured I may as well drop my favorite child of any project (the backend) and give BaaS a shot! And honestly, I wouldn't do it again, a  Cloud-managed backend with Supabase isn't something I am particularly fond of after working with it, though to an extent its Supa's fault. Still an interesting experience.
 
-## Expanding the ESLint configuration
+## Lessons Learned:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-"# bookInAFrame" 
+Keep your good ol' express backend.
+
+
