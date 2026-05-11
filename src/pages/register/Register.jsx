@@ -36,7 +36,6 @@ const Register = () => {
         }
 
         try {
-            // --- STEP 1: Create the Auth User with email and password ---
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: email,
                 password: password,
@@ -44,21 +43,17 @@ const Register = () => {
             console.log(authData)
 
             if (authError) {
-                // Handle auth specific errors (e.g., weak password, user already registered)
                 throw authError;
             }
 
             const newUser = authData.user;
             if (!newUser) {
-                // This happens if email confirmation is required and the user is not signed in immediately
                 alert("Registration successful. Please check your email to confirm your account.");
                 navigate("/login");
                 console.log("User created but email confirmation is required.");
                 return;
             }
 
-            // --- STEP 2: Insert the Profile Data into the 'profiles' table ---
-            // The 'id' links it to the 'auth.users' table
             const { error: profileError } = await supabase
                 .from('profiles')
                 .upsert([
@@ -70,17 +65,13 @@ const Register = () => {
                 ], { onConflict: 'id' });
 
             if (profileError) {
-                // NOTE: If profile insertion fails, you might want to delete the auth user
-                // to prevent orphaned accounts. For simplicity, we just log the error here.
                 console.error("Profile insertion failed:", profileError);
                 throw profileError;
             }
 
-            // If successful, navigate to login or home
-            navigate("/login");
+            navigate("/home");
 
         } catch (error) {
-            // FIX: Access error message directly from the Supabase error object
             setErr(error.message || "Registration failed. Please try again.");
         } finally {
             setIsPending(false);
