@@ -69,7 +69,7 @@ const Register = () => {
                 throw profileError;
             }
 
-            navigate("/home");
+            navigate("/");
 
         } catch (error) {
             setErr(error.message || "Registration failed. Please try again.");
