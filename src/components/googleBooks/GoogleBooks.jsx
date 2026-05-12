@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-
+// Fetches and displays popular literary fiction from the Google Books API
 const GoogleBooks = () => {
     const { data: books, isLoading } = useQuery({
         queryKey: ["googleBooks"],
