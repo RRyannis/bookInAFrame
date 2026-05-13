@@ -16,7 +16,7 @@ const GoogleBooks = () => {
                 infoLink: item.volumeInfo.infoLink,
             }));
         },
-        staleTime: 1000 * 60 * 60,
+        staleTime: 1000 * 60 * 60 * 24,
     });
 
     if (isLoading) return <p style={{ fontSize: "13px", color: "gray" }}>Loading...</p>;
