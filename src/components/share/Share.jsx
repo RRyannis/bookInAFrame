@@ -1,5 +1,4 @@
 import "./share.scss";
-// NOTE: Map and Friend are now imported correctly for use in <img> tags
 import Image from "../../assets/img.png"; 
 import Map from "../../assets/map.png"; 
 import Friend from "../../assets/friend.png"; 
@@ -10,21 +9,19 @@ import { supabase } from "../../supabaseClient";
 
 const Share = () => {
 
-  // Existing State
+ 
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  // NEW STATE for Book Data
+  
   const [title, setTitle] = useState("");
-  const [authors, setAuthors] = useState(""); // Will be converted to an array before RPC
+  const [authors, setAuthors] = useState(""); 
   const [pageRef, setPageRef] = useState("");
 
   const { currentUser } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  // ------------------------------------------------
-  // 1. SUPABASE STORAGE UPLOAD FUNCTION
-  // ------------------------------------------------
   const uploadFile = async (file) => {
     if (!file) return null;
 
@@ -52,14 +49,9 @@ const Share = () => {
     return publicUrlData.publicUrl;
   };
 
-  // ------------------------------------------------
-  // 2. MUTATION FUNCTION (Handles Book Upsert & Post Insert)
-  // ------------------------------------------------
   const postMutation = useMutation({
     mutationFn: async ({ title, authors, postData }) => {
       
-      // --- STEP A: Get/Create Book ID (RPC Call) ---
-      // Convert authors string (e.g., "Author 1, Author 2") to a clean array
       const authorArray = authors.split(',').map(a => a.trim()).filter(a => a.length > 0);
       
       const { data: book_id, error: bookError } = await supabase.rpc('get_or_create_book', {
@@ -72,10 +64,9 @@ const Share = () => {
         throw new Error("Failed to find or create book: " + bookError.message);
       }
 
-      // --- STEP B: Insert the Post using the retrieved book_id ---
       const newPost = {
         ...postData,
-        book_id: book_id, // Use the ID returned from the RPC function
+        book_id: book_id,
       };
 
       const { error: postError } = await supabase.from("posts").insert([newPost]);
@@ -87,65 +78,58 @@ const Share = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      setTitle("");
+      setAuthors("");
+      setPageRef("");
+      setDesc("");
+      setFile(null);
+      setIsUploading(false);
+      if (file) URL.revokeObjectURL(file);
     },
+    onError: () => {
+      setIsUploading(false);
+  }
 });
 
-  // ------------------------------------------------
-  // 3. HANDLER FUNCTION
-  // ------------------------------------------------
   const handleClick = async (e) => {
     e.preventDefault();
     
-    // Check for minimum required data: must have a file AND a title
     if (!file || !title.trim()) {
       alert("Please upload an image and provide the book title.");
       return; 
     }
+    setIsUploading(true);
 
     let imageUrl = "";
     try {
-      // 1. Upload the image file first
       imageUrl = await uploadFile(file);
+      const postData = {
+        caption: desc || null,
+        image_url: imageUrl,
+        user_id: currentUser.id,
+        page_reference: pageRef || null,
+      };
+      postMutation.mutate({
+        title: title.trim(),
+        authors: authors.trim(),
+        postData,
+      });
     } catch (err) {
+      setIsUploading(false);
       console.error("Upload failed, cancelling post:", err);
-      return; 
+      return;
     }
-    
-    // 2. Define the data structure for the post (excluding book info)
-    const postData = {
-      caption: desc || null,
-      image_url: imageUrl,
-      user_id: currentUser.id,
-      page_reference: pageRef || null,
-      // book_id will be added by the mutation function
-    };
-    
-    // 3. Call the mutation to handle Book Upsert & Post Insert
-    postMutation.mutate({ 
-      title: title.trim(), 
-      authors: authors.trim(), 
-      postData 
-    });
-    
-    // 4. Clear form state
-    setTitle("");
-    setAuthors("");
-    setPageRef("");
-    setDesc("");
-    setFile(null);
   };
 
   return (
     <div className="share">
       <div className="container">
-        {/* TOP SECTION: User Info, Caption Input, Image Preview */}
         <div className="top">
           <div className="left">
             <img 
               src={currentUser?.avatar_url || 'default_placeholder_image_url'} 
               alt="" 
             />
-            {/* Main Caption Input */}
             <input 
               type="text" 
               placeholder="Add your thoughts or a full quote here..." 
@@ -158,8 +142,6 @@ const Share = () => {
           </div>
         </div>
         <hr />
-        
-        {/* NEW INPUTS SECTION: Book Details */}
         <div className="book-details-inputs">
             <h3>Book Details</h3>
             <input 
@@ -182,11 +164,8 @@ const Share = () => {
             />
         </div>
         <hr />
-
-        {/* BOTTOM SECTION: Buttons and Share */}
         <div className="bottom">
           <div className="left">
-            {/* Image Upload Button */}
             <input type="file" id="file" style={{display:"none"}} onChange={e => setFile(e.target.files[0])}/>
             <label htmlFor="file">
               <div className="item">
@@ -194,8 +173,6 @@ const Share = () => {
                 <span>{file ? "Change Image" : "Add Image"}</span>
               </div>
             </label>
-            
-            {/* CORRECTION: Placeholder Items now correctly use <img> tag */}
             <div className="item">
               <img src={Map} alt="" />
               <span>Add Place</span>
@@ -208,7 +185,7 @@ const Share = () => {
           </div>
           <div className="right">
             <button onClick={handleClick} disabled={postMutation.isPending || !title.trim() || !file}>
-              {postMutation.isPending ? "Sharing..." : "Share"}
+              {isUploading || postMutation.isPending ? "Sharing..." : "Share"}
             </button>
           </div>
         </div>
