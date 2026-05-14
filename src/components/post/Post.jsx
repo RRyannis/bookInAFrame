@@ -100,13 +100,31 @@ const Post = ({ post }) => {
                 to={`/profiles/${post.profile.username}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <span className="name">{post.profile.full_name || post.profile.username}</span>
+                <span className="name">
+                  {post.profile.full_name || post.profile.username}
+                </span>
               </Link>
               <span className="date">{moment(post.created_at).fromNow()}</span>
             </div>
           </div>
           <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
-          {(menuOpen && post.user_id === currentUserId) && <button onClick={handleDelete}>delete</button>}
+          {menuOpen && post.user_id === currentUserId && (
+            <button onClick={handleDelete}>delete</button>
+          )}
+        </div>
+        <div className="bookInfoBar">
+          <Link
+            to={`/books/${post.book_id}`}
+            className="bookLink"
+            style={{ textDecoration: "none" }}
+          >
+            <span className="title">📖 {post.book?.title}</span>
+          </Link>
+          <span className="author"> by {post.book?.authors?.join(", ")}</span>
+
+          {post.page_reference && (
+            <span className="page"> (p. {post.page_reference})</span>
+          )}
         </div>
         <div className="content">
           <p>{post.caption}</p>
@@ -114,7 +132,9 @@ const Post = ({ post }) => {
         </div>
         <div className="info">
           <div className="item">
-            {isLoading ? "loading" : (
+            {isLoading ? (
+              "loading"
+            ) : (
               <button
                 onClick={handleLike}
                 disabled={isPending}

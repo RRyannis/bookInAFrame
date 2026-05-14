@@ -53,7 +53,33 @@
           background-color: red;
         }
       }
+      .bookInfoBar {
+        margin: 10px 0;
+        padding: 8px 12px;
+        background-color: rgba(var(--color-bg-soft), 0.5); 
+        border-left: 4px solid #5271ff; 
+        border-radius: 4px;
+        font-size: 14px;
 
+        .title {
+          font-weight: 600;
+          color: #5271ff;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        .author {
+          color: var(--color-text-soft);
+          font-style: italic;
+        }
+
+        .page {
+          color: var(--color-text-soft);
+          font-weight: 500;
+        }
+      }
       .content {
         margin: 20px 0px;
 
@@ -76,15 +102,15 @@
           gap: 10px;
           cursor: pointer;
           font-size: 14px;
-          
+
           button.likeButton {
             background: none;
             border: none;
             padding: 0;
             margin: 0;
-            color: inherit; 
+            color: inherit;
             cursor: pointer;
-            display: flex; 
+            display: flex;
             align-items: center;
 
             &:disabled {
@@ -92,7 +118,6 @@
               opacity: 0.6;
             }
           }
-
         }
       }
     }
