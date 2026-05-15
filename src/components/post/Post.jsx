@@ -118,7 +118,7 @@ const Post = ({ post }) => {
             className="bookLink"
             style={{ textDecoration: "none" }}
           >
-            <span className="title">📖 {post.book?.title}</span>
+            {post.book && <div className="bookInfoBar"><Link to={`/books/${post.book_id}`} className="bookLink" style={{ textDecoration: "none" }}><span className="title">📖 {post.book.title}</span></Link><span className="author"> by {post.book.authors?.join(", ")}</span>{post.page_reference && <span className="page"> (p. {post.page_reference})</span>}</div>}
           </Link>
           <span className="author"> by {post.book?.authors?.join(", ")}</span>
 
