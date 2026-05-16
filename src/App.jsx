@@ -54,6 +54,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="profiles/:username" element={<Profile />} />
           <Route path="explore" element={<Explore />}/>
+          <Route path="books/:id" element={<div className="book-page-placeholder">Book Page Coming Soon...</div>} />
         </Route>
         
         <Route path="/login" element={<Login />}/>
