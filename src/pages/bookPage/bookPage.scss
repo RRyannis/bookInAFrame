@@ -1,0 +1,69 @@
+.bookPage {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .bookHeader {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+    align-items: center;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .coverImg {
+      width: 120px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .bookMeta {
+      h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+        color: var(--color-text);
+      }
+
+      h2 {
+        font-size: 18px;
+        font-weight: 400;
+        color: var(--color-text-soft);
+        margin-bottom: 15px;
+      }
+
+      .statsCount {
+        font-size: 14px;
+        background: rgba(#5271ff, 0.1);
+        color: #5271ff;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: var(--color-border);
+    margin: 25px 0;
+  }
+
+  .bookFeed {
+    h3 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: var(--color-text);
+    }
+
+    .noPosts {
+      color: var(--color-text-soft);
+      font-style: italic;
+    }
+  }
+}

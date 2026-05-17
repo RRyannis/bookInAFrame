@@ -11,6 +11,7 @@ import "../src/styles/style.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
+import BookPage from "./pages/bookPage/BookPage";
 
 const Layout = () => {
   const { darkMode } = useContext(DarkModeContext);
@@ -54,7 +55,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="profiles/:username" element={<Profile />} />
           <Route path="explore" element={<Explore />}/>
-          <Route path="books/:id" element={<div className="book-page-placeholder">Book Page Coming Soon...</div>} />
+          <Route path="books/:id" element={<BookPage />} />
         </Route>
         
         <Route path="/login" element={<Login />}/>
