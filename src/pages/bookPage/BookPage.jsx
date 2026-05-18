@@ -6,9 +6,7 @@ import Post from "../../components/post/Post";
 
 const BookPage = () => {
   const { id } = useParams(); 
-  if (!id) return <div className="error">Invalid book selection.</div>;
 
-  
   const { data: bookData, isLoading: bookLoading, error: bookError } = useQuery({
     queryKey: ["bookDetails", id],
     queryFn: async () => {
@@ -23,7 +21,6 @@ const BookPage = () => {
     },
   });
 
-  
   const { data: postsData, isLoading: postsLoading, error: postsError } = useQuery({
     queryKey: ["bookPosts", id],
     queryFn: async () => {
@@ -41,7 +38,7 @@ const BookPage = () => {
       return data;
     },
   });
-
+  if (!id) return <div className="error">Invalid book selection.</div>;
   if (bookLoading || postsLoading) return <div className="loading">Loading library assets...</div>;
   if (bookError || postsError) return <div className="error">Error loading book hub.</div>;
 
