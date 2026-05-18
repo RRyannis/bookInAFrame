@@ -5,9 +5,10 @@ import { supabase } from "../../supabaseClient";
 import Post from "../../components/post/Post";
 
 const BookPage = () => {
-  const { id } = useParams(); // Grabs the book UUID from the URL
+  const { id } = useParams(); 
+  if (!id) return <div className="error">Invalid book selection.</div>;
 
-  // 1. Fetch Book Details
+  
   const { data: bookData, isLoading: bookLoading, error: bookError } = useQuery({
     queryKey: ["bookDetails", id],
     queryFn: async () => {
@@ -15,14 +16,14 @@ const BookPage = () => {
         .from("books")
         .select("*")
         .eq("id", id)
-        .single(); // We only expect one book record
+        .single(); 
 
       if (error) throw new Error(error.message);
       return data;
     },
   });
 
-  // 2. Fetch All Posts Associated with this Book
+  
   const { data: postsData, isLoading: postsLoading, error: postsError } = useQuery({
     queryKey: ["bookPosts", id],
     queryFn: async () => {
@@ -46,7 +47,6 @@ const BookPage = () => {
 
   return (
     <div className="bookPage">
-      {/* Book Hub Hero Header */}
       <div className="bookHeader">
         {bookData?.thumbnail_url && (
           <img src={bookData.thumbnail_url} alt={bookData.title} className="coverImg" />
@@ -59,10 +59,8 @@ const BookPage = () => {
           </span>
         </div>
       </div>
-
       <hr />
 
-      {/* Grid/Feed of Frames for this specific book */}
       <div className="bookFeed">
         <h3>Community Captures</h3>
         {postsData?.length === 0 ? (
