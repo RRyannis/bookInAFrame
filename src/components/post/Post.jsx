@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
 import { useState, useContext } from "react";
 import moment from "moment";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AuthContext } from "../../context/authContext";
 import { supabase } from "../../supabaseClient";
 
@@ -16,16 +16,22 @@ const Post = ({ post }) => {
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { isLoading, error: _error, data: likesData } = useQuery({
+  const {
+    isLoading,
+    error: _error,
+    data: likesData,
+  } = useQuery({
     queryKey: ["likes", post.id],
     queryFn: async () => {
-      const { data: supabaseData, error: fetchError } = await supabase.from("likes").select("userId").eq("postId", post.id);
+      const { data: supabaseData, error: fetchError } = await supabase
+        .from("likes")
+        .select("userId")
+        .eq("postId", post.id);
       if (fetchError) {
-        console.error("Supabase likes fetch error:", fetchError);
         throw new Error(fetchError.message);
       }
-      return supabaseData.map(like => like.userId);
-    }
+      return supabaseData.map((like) => like.userId);
+    },
   });
   const { data: commentCount, isLoading: commentsLoading } = useQuery({
     queryKey: ["commentCount", post.id],
@@ -34,7 +40,6 @@ const Post = ({ post }) => {
         .from("comments")
         .select("*", { count: "exact", head: true })
         .eq("postId", post.id);
-
 
       if (error) throw new Error(error.message);
       return count || 0;
@@ -51,17 +56,20 @@ const Post = ({ post }) => {
       if (!currentUserId) {
         throw new Error("User not authenticated");
       }
-      console.log("Like mutation: userId =", currentUserId, "postId =", post.id, "isLiked =", isCurrentlyLiked);
       if (isCurrentlyLiked) {
-        const { error } = await supabase.from("likes").delete().eq("postId", post.id).eq("userId", currentUserId);
+        const { error } = await supabase
+          .from("likes")
+          .delete()
+          .eq("postId", post.id)
+          .eq("userId", currentUserId);
         if (error) {
-          console.error("Like delete error:", error);
           throw new Error(error.message);
         }
       } else {
-        const { error } = await supabase.from("likes").insert({ postId: post.id, userId: currentUserId });
+        const { error } = await supabase
+          .from("likes")
+          .insert({ postId: post.id, userId: currentUserId });
         if (error) {
-          console.error("Like insert error:", error);
           throw new Error(error.message);
         }
       }
@@ -113,17 +121,21 @@ const Post = ({ post }) => {
           )}
         </div>
         <div className="bookInfoBar">
-          <Link
-            to={`/books/${post.book_id}`}
-            className="bookLink"
-            style={{ textDecoration: "none" }}
-          >
-            {post.book && <div className="bookInfoBar"><Link to={`/books/${post.book_id}`} className="bookLink" style={{ textDecoration: "none" }}><span className="title">📖 {post.book.title}</span></Link><span className="author"> by {post.book.authors?.join(", ")}</span>{post.page_reference && <span className="page"> (p. {post.page_reference})</span>}</div>}
-          </Link>
-          <span className="author"> by {post.book?.authors?.join(", ")}</span>
-
-          {post.page_reference && (
-            <span className="page"> (p. {post.page_reference})</span>
+          {post.book && (
+            <Link
+              to={`/books/${post.book_id}`}
+              className="bookLink"
+              style={{ textDecoration: "none" }}
+            >
+              <span className="title">{post.book.title}</span>
+              <span className="author">
+                {" "}
+                by {post.book.authors?.join(", ")}
+              </span>
+              {post.page_reference && (
+                <span className="page"> · p. {post.page_reference}</span>
+              )}
+            </Link>
           )}
         </div>
         <div className="content">

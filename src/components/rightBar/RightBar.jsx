@@ -1,12 +1,12 @@
 import "./rightBar.scss";
 import { supabase } from "../../supabaseClient";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useFollow } from "../../hooks/useFollow";
 import GoogleBooks from "../googleBooks/GoogleBooks";
 
-const SuggestionUser = ({ user }) => {
+const SuggestionUser = ({ user, onDismiss }) => {
   const { toggleFollow, isPending } = useFollow(user.id, false);
 
   return (
@@ -19,27 +19,19 @@ const SuggestionUser = ({ user }) => {
         <button onClick={() => toggleFollow()} disabled={isPending}>
           {isPending ? "following..." : "follow"}
         </button>
-        <button>dismiss</button>
+        <button onClick={() => onDismiss(user.id)}>dismiss</button>
       </div>
     </div>
   );
 };
 
-const PopBook = ({ book }) => {
-  return (
-    <div className="book">
-      <div className="bookInfo">
-        <img src={book.thumbnail_url || "/default-book-cover.png"} alt="" />
-        <span>{book.title} </span>
-        <span>{book.authors?.join(", ")}</span>
-      </div>
-    </div>
-  );
-};
-
-const RightBar = () =>{
+const RightBar = () => {
     const { currentUser } = useContext(AuthContext);
+    const [dismissedIds, setDismissedIds] = useState([]);
 
+    const handleDismiss = (userId) => {
+        setDismissedIds((prev) => [...prev, userId]);
+    };
 
     const { data: followingData } = useQuery({
         queryKey: ["following", currentUser.id],
@@ -47,7 +39,7 @@ const RightBar = () =>{
             const { data, error } = await supabase
                 .from("relationships")
                 .select("followedUserId")
-                .eq("followerUserId", currentUser.id)
+                .eq("followerUserId", currentUser.id);
             if (error) throw new Error(error.message);
             return data;
         }
@@ -63,43 +55,34 @@ const RightBar = () =>{
                 .from("profiles")
                 .select("*")
                 .not("id", "in", `(${excludeIds.join(",")})`)
-                .limit(5)
+                .limit(5);
             if (error) throw new Error(error.message);
             return data;
         },
         enabled: !!followingData
     });
 
-    const { data: popularBooksData, isLoading: isLoadingPopularBooks } = useQuery({
-        queryKey: ["popularBooks"],
-        queryFn: async () => { 
-          const { data, error } = await supabase
-            .from("popular_books")
-            .select("*")
-          if (error) throw new Error(error.message);
-            return data;
-        }
-      });
-   
-
     return (
-      <div className="rightBar">
-        <div className="container">
-          <div className="item">
-            <span>Suggestions for you</span>
-            {isLoadingNotFollowing
-              ? "Loading suggestions..."
-              : notFollowingData?.map((user) => (
-                  <SuggestionUser key={user.id} user={user} />
-                ))}
-          </div>
-          <div className="item">
-            <span>Discover Books</span>
-            <GoogleBooks />
+        <div className="rightBar">
+            <div className="container">
+                <div className="item">
+                    <span>Suggestions for you</span>
+                    {isLoadingNotFollowing
+                        ? "Loading suggestions..."
+                        : notFollowingData
+                            ?.filter((user) => !dismissedIds.includes(user.id))
+                            .map((user) => (
+                                <SuggestionUser key={user.id} user={user} onDismiss={handleDismiss} />
+                            ))
+                    }
+                </div>
+                <div className="item">
+                    <span>Discover Books</span>
+                    <GoogleBooks />
+                </div>
+            </div>
         </div>
-        </div>
-      </div>
     );
-}
+};
 
 export default RightBar;

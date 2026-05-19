@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-// Fetches and displays popular literary fiction from the Google Books API
 const GoogleBooks = () => {
     const { data: books, isLoading } = useQuery({
         queryKey: ["googleBooks"],
         queryFn: async () => {
             const res = await fetch(
-                "https://www.googleapis.com/books/v1/volumes?q=subject:literary+fiction&orderBy=relevance&maxResults=5&langRestrict=en"
+                "https://www.googleapis.com/books/v1/volumes?q=subject:literary+fiction&orderBy=relevance&maxResults=5&langRestrict=en&key=AIzaSyCuLWdtocjQzIq5YdOUTCEw2KixySm9z78"
             );
             const data = await res.json();
             return data.items.map((item) => ({
@@ -17,6 +16,7 @@ const GoogleBooks = () => {
             }));
         },
         staleTime: 1000 * 60 * 60 * 24,
+        retry: false,
     });
 
     if (isLoading) return <p style={{ fontSize: "13px", color: "gray" }}>Loading...</p>;
