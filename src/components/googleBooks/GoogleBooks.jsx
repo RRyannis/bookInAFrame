@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 const GoogleBooks = () => {
+    const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
     const { data: books, isLoading } = useQuery({
         queryKey: ["googleBooks"],
         queryFn: async () => {
             const res = await fetch(
-                "https://www.googleapis.com/books/v1/volumes?q=subject:literary+fiction&orderBy=relevance&maxResults=5&langRestrict=en&key=AIzaSyCuLWdtocjQzIq5YdOUTCEw2KixySm9z78"
+                `https://www.googleapis.com/books/v1/volumes?q=subject:literary+fiction&orderBy=relevance&maxResults=5&langRestrict=en&key=${API_KEY}`
             );
             const data = await res.json();
             return data.items.map((item) => ({
