@@ -1,22 +1,37 @@
-.feedTabs {
+@import "/src/styles/style.scss";
+
+.home {
     @include themify($themes) {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
+        background-color: themed("bgSoft");
+        padding: 20px 70px;
 
-        button {
-            padding: 8px 20px;
-            border: 1px solid themed("border");
-            border-radius: 20px;
-            background: transparent;
-            color: themed("textColor");
-            cursor: pointer;
-            font-size: 14px;
+        @include mobile {
+            padding: 10px;
+        }
 
-            &.active {
-                background-color: #5271ff;
-                color: white;
-                border-color: #5271ff;
+        @include tablet {
+            padding: 20px;
+        }
+
+        .feedTabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+
+            button {
+                padding: 8px 20px;
+                border: 1px solid themed("border");
+                border-radius: 20px;
+                background: transparent;
+                color: themed("textColor");
+                cursor: pointer;
+                font-size: 14px;
+
+                &.active {
+                    background-color: #5271ff;
+                    color: white;
+                    border-color: #5271ff;
+                }
             }
         }
     }
