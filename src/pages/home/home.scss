@@ -1,21 +1,23 @@
 .feedTabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    @include themify($themes) {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
 
-    button {
-        padding: 8px 20px;
-        border: 1px solid themed("border");
-        border-radius: 20px;
-        background: transparent;
-        color: themed("textColor");
-        cursor: pointer;
-        font-size: 14px;
+        button {
+            padding: 8px 20px;
+            border: 1px solid themed("border");
+            border-radius: 20px;
+            background: transparent;
+            color: themed("textColor");
+            cursor: pointer;
+            font-size: 14px;
 
-        &.active {
-            background-color: #5271ff;
-            color: white;
-            border-color: #5271ff;
+            &.active {
+                background-color: #5271ff;
+                color: white;
+                border-color: #5271ff;
+            }
         }
     }
 }
