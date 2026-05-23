@@ -126,6 +126,7 @@ const Post = ({ post }) => {
               to={`/books/${post.book_id}`}
               className="bookLink"
               style={{ textDecoration: "none" }}
+              title={post.book.title}
             >
               <span className="title">{post.book.title}</span>
               <span className="author">
