@@ -1,9 +1,9 @@
 # BookInAFrame
 An amalgamation of inspirations from pinterest, x and letterboxd that aims to be a place for people to discuss their favorite books and book quotes.
 
-**Link to project:** http://recruiters-love-seeing-live-demos.com/
+**Link to project:** https://bookinaframe.netlify.app/
 
-![alt tag](http://placecorgi.com/1200/650)
+![alt tag](https://ibb.co/s9L3ThzD)
 
 ## How It's Made:
 
