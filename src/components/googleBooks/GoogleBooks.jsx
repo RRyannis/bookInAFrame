@@ -27,7 +27,7 @@ const GoogleBooks = () => {
         <div className="googleBooks">
             {books.map((book) => {
                 return (
-                    <div key={book.id} className="googleBook" onClick={() => window.open(book.infoLink, "_blank")}>
+                    <div key={book.id} className="googleBook" onClick={() => window.open(book.infoLink, "_blank", "noopener,noreferrer")}>
                         {book.thumbnail && (
                             <img src={book.thumbnail} alt={book.title} />
                         )}
