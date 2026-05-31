@@ -38,6 +38,7 @@
           width: 200px;
           background-color: transparent;
           color: themed("textColor");
+          outline: none;
 
           @include mobile{
             display: none;
