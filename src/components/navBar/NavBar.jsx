@@ -74,7 +74,7 @@ const Navbar = () => {
           />
           <span>{currentUser?.full_name || currentUser?.username}</span>
         </div>
-        <LogOut onClick={handleLogout} className="logout-icon" />
+        <LogOut onClick={handleLogout} className="logout-icon" title="Logout" />
       </div>
     </div>
   );
