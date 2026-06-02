@@ -1,18 +1,27 @@
 # BookInAFrame
-An amalgamation of inspirations from pinterest, x and letterboxd that aims to be a place for people to discuss their favorite books and book quotes.
+An amalgamation of inspirations from Pinterest, X and Letterboxd that aims to be a place for people to share and discuss their favorite book passages — the ones that capture a book's soul in a single frame.
 
-**Link to project:** https://bookinaframe.netlify.app/
+**Live:** https://bookinaframe.netlify.app/
 
 ![alt tag](https://ibb.co/s9L3ThzD)
 
-## How It's Made:
+## How It's Made
 
-**Tech used:** HTML, CSS, JavaScript, React, Supabase
+**Tech used:** React (Vite), SCSS, Supabase (Auth, Database, Storage), React Query, React Router
 
-Initially it was going to be a pretty standard mern project but with mysql instead of mongo. At some point when I was randomly looking into deployment for a full stack app, I came to the realization that it seemed like a pain to manage. Thus I figured I may as well drop my favorite child of any project (the backend) and give BaaS a shot! And honestly, I wouldn't do it again, a  Cloud-managed backend with Supabase isn't something I am particularly fond of after working with it, though to an extent its Supa's fault. Still an interesting experience.
+Initially planned as a MERN project with MySQL instead of Mongo. At some point when looking into deployment for a full stack app, I came to the realisation that managing your own backend is a pain. So I dropped my favorite child of any project (the backend) and gave BaaS a shot. Honestly, I wouldn't do it again — a cloud-managed backend with Supabase isn't something I'm particularly fond of after working with it. Still an interesting experience though.
 
-## Lessons Learned:
+## Features
 
-Keep your good ol' express backend.
+- Share book passage screenshots with captions and page references
+- Like, comment and repost posts
+- Follow other users
+- Book pages showing all community posts for a given book
+- Search for books and users
+- Discover books via Google Books API
+
+## Lessons Learned
+
+Keep your good ol' Express backend.
 
 

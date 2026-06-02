@@ -19,7 +19,8 @@ const Search = () => {
             if (error) throw new Error(error.message);
             return data;
         },
-        enabled: !!query
+        enabled: !!query,
+        staleTime: 1000 * 60 * 5
     });
 
     const { data: bookResults, isLoading: booksLoading } = useQuery({
@@ -33,7 +34,8 @@ const Search = () => {
             if (error) throw new Error(error.message);
             return data;
         },
-        enabled: !!query
+        enabled: !!query,
+        staleTime: 1000 * 60 * 5
     });
 
     if (!query) return <div className="search"><p>Enter a search term.</p></div>;
