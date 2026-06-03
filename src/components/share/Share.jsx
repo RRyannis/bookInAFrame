@@ -12,7 +12,6 @@ const Share = () => {
  
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
 
   
   const [title, setTitle] = useState("");
@@ -34,7 +33,6 @@ const Share = () => {
       });
 
     if (uploadError) {
-      console.error("Supabase Storage Upload Error:", uploadError);
       throw new Error(uploadError.message);
     }
     
@@ -60,7 +58,6 @@ const Share = () => {
       });
 
       if (bookError) {
-        console.error("Supabase RPC Error (get_or_create_book):", bookError);
         throw new Error("Failed to find or create book: " + bookError.message);
       }
 
@@ -72,7 +69,6 @@ const Share = () => {
       const { error: postError } = await supabase.from("posts").insert([newPost]);
 
       if (postError) {
-        console.error("Supabase Post Insert Error:", postError);
         throw new Error(postError.message);
       }
     },
@@ -83,12 +79,10 @@ const Share = () => {
       setPageRef("");
       setDesc("");
       setFile(null);
-      setIsUploading(false);
-      if (file) URL.revokeObjectURL(file);
     },
     onError: () => {
-      setIsUploading(false);
-  }
+    alert("An error occurred while sharing your post. Please try again.");      
+    }
 });
 
   const handleClick = async (e) => {
@@ -98,7 +92,6 @@ const Share = () => {
       alert("Please upload an image and provide the book title.");
       return; 
     }
-    setIsUploading(true);
 
     let imageUrl = "";
     try {
@@ -115,8 +108,7 @@ const Share = () => {
         postData,
       });
     } catch (err) {
-      setIsUploading(false);
-      console.error("Upload failed, cancelling post:", err);
+      alert("Failed to upload image: " + err.message);
       return;
     }
   };
@@ -185,7 +177,7 @@ const Share = () => {
           </div>
           <div className="right">
             <button onClick={handleClick} disabled={postMutation.isPending || !title.trim() || !file}>
-              {isUploading || postMutation.isPending ? "Sharing..." : "Share"}
+              {postMutation.isPending ? "Sharing..." : "Share"}
             </button>
           </div>
         </div>
