@@ -4,6 +4,7 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
 import { useState, useContext } from "react";
@@ -169,6 +170,10 @@ const Post = ({ post }) => {
           <div className="item">
             <ShareOutlinedIcon />
             Share
+          </div>
+          <div className="item">
+            <BookmarkIcon />
+            Save
           </div>
         </div>
         {commentOpen && <Comments postId={post.id} />}
