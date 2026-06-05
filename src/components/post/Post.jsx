@@ -4,7 +4,8 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { Link } from "react-router-dom";
 import Comments from "../comments/Comments";
 import { useState, useContext } from "react";
@@ -89,6 +90,52 @@ const Post = ({ post }) => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
   });
+  const { data: bookmarkData } = useQuery({
+    queryKey: ["bookmark", post.id, currentUserId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bookmarks")
+        .select("id")
+        .eq("post_id", post.id)
+        .eq("user_id", currentUserId)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    enabled: !!currentUserId,
+  });
+
+  const isBookmarked = !!bookmarkData;
+
+  const { mutate: toggleBookmarkMutation } = useMutation({
+    mutationFn: async (isCurrentlyBookmarked) => {
+      if (!currentUserId) throw new Error("User not authenticated");
+
+      if (isCurrentlyBookmarked) {
+        const { error } = await supabase
+          .from("bookmarks")
+          .delete()
+          .eq("post_id", post.id)
+          .eq("user_id", currentUserId);
+        if (error) throw new Error(error.message);
+      } else {
+        const { error } = await supabase
+          .from("bookmarks")
+          .insert({ post_id: post.id, user_id: currentUserId });
+        if (error) throw new Error(error.message);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["bookmark", post.id, currentUserId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["bookmarks"] });
+    },
+  });
+
+  const handleBookmark = () => {
+    toggleBookmarkMutation(isBookmarked);
+  };
 
   const handleLike = () => {
     toggleLikeMutation(likesData?.includes(currentUserId));
@@ -172,7 +219,9 @@ const Post = ({ post }) => {
             Share
           </div>
           <div className="item">
-            <BookmarkIcon />
+            <button onClick={handleBookmark} className="bookmarkButton">
+              {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+            </button>
             Save
           </div>
         </div>

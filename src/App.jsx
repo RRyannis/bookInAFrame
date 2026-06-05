@@ -13,6 +13,7 @@ import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/authContext";
 import BookPage from "./pages/bookPage/BookPage";
 import Search from "./pages/search/Search";
+import Bookmarks from "./pages/bookmarks/Bookmarks";
 
 const Layout = () => {
   const { darkMode } = useContext(DarkModeContext);
@@ -58,6 +59,7 @@ function App() {
           <Route path="explore" element={<Explore />}/>
           <Route path="books/:id" element={<BookPage />} />
           <Route path="search" element={<Search />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
         </Route>
         
         <Route path="/login" element={<Login />}/>
