@@ -27,7 +27,8 @@ const Bookmarks = () => {
             if (error) throw new Error(error.message);
             return data.map(bookmark => bookmark.post);
         },
-        enabled: !!currentUser?.id
+        enabled: !!currentUser?.id,
+        staleTime: 1000 * 60 * 5,
     });
 
     return (
