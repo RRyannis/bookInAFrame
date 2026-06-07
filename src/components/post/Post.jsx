@@ -102,6 +102,7 @@ const Post = ({ post }) => {
       if (error) throw new Error(error.message);
       return data;
     },
+    staleTime: 1000 * 60 * 5,
     enabled: !!currentUserId,
   });
 
