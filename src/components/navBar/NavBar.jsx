@@ -53,6 +53,7 @@ const Navbar = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearch}
+            autoComplete="off"
             
           />
         </div>
