@@ -127,6 +127,7 @@ const Share = () => {
               placeholder="Add your thoughts or a full quote here..." 
               onChange={(e) => setDesc(e.target.value)} 
               value={desc}
+               maxLength={500}
             />
           </div>
           <div className="right">
