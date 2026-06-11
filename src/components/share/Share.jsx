@@ -142,6 +142,7 @@ const Share = () => {
                 placeholder="* Book Title (Required)" 
                 onChange={(e) => setTitle(e.target.value)} 
                 value={title}
+                maxLength={200}
             />
             <input 
                 type="text" 
