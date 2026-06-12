@@ -155,6 +155,7 @@ const Share = () => {
                 placeholder="Page Reference (e.g., Page 42)" 
                 onChange={(e) => setPageRef(e.target.value)} 
                 value={pageRef}
+                maxLength={20}
             />
         </div>
         <hr />
