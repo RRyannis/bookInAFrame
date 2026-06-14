@@ -149,7 +149,7 @@ const Share = () => {
                 placeholder="Author(s) (separate with commas, e.g., A. Smith, J. Doe)" 
                 onChange={(e) => setAuthors(e.target.value)} 
                 value={authors}
-                maxLength={200}
+                maxLength={100}
             />
             <input 
                 type="text" 
