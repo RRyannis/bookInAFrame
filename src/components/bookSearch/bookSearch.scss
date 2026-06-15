@@ -1,0 +1,99 @@
+@import "/src/styles/style.scss";
+
+.bookSearch {
+  position: relative; 
+  width: 100%;
+
+  @include themify($themes) {
+    form {
+      display: flex;
+      gap: 10px;
+
+      input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid themed("border");
+        border-radius: 8px;
+        background-color: themed("bg");
+        color: themed("textColor");
+        outline: none;
+
+        &:focus {
+          border-color: #5271ff;
+        }
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #5271ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: opacity 0.2s;
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: wait;
+        }
+      }
+    }
+
+    .bookResults {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      background-color: themed("bg");
+      border: 1px solid themed("border");
+      border-radius: 8px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+
+      .bookResult {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        gap: 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: themed("bgSoft");
+        }
+
+        img {
+          width: 40px;
+          height: 60px;
+          object-fit: cover;
+          border-radius: 4px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .resultInfo {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          overflow: hidden;
+
+          .title {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .authors {
+            font-size: 12px;
+            color: themed("textColorSoft");
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
+}
