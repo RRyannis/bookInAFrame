@@ -6,16 +6,12 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from "../../supabaseClient";
+import BookSearch from "../bookSearch/BookSearch";
 
 const Share = () => {
-
- 
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
-
-  
-  const [title, setTitle] = useState("");
-  const [authors, setAuthors] = useState(""); 
+  const [selectedBook, setSelectedBook] = useState(null);
   const [pageRef, setPageRef] = useState("");
 
   const { currentUser } = useContext(AuthContext);
@@ -32,9 +28,7 @@ const Share = () => {
         upsert: false,
       });
 
-    if (uploadError) {
-      throw new Error(uploadError.message);
-    }
+    if (uploadError) throw new Error(uploadError.message);
     
     const { data: publicUrlData } = supabase.storage
       .from('bookInAFrameStorage')
@@ -48,48 +42,37 @@ const Share = () => {
   };
 
   const postMutation = useMutation({
-    mutationFn: async ({ title, authors, postData }) => {
-      
-      const authorArray = authors.split(',').map(a => a.trim()).filter(a => a.length > 0);
-      
+    mutationFn: async ({ book, postData }) => {
       const { data: book_id, error: bookError } = await supabase.rpc('get_or_create_book', {
-        p_title: title,
-        p_authors: authorArray,
+        p_title: book.title,
+        p_authors: book.authors,
+        p_thumbnail_url: book.thumbnail_url,
+        p_google_books_id: book.google_books_id,
       });
 
-      if (bookError) {
-        throw new Error("Failed to find or create book: " + bookError.message);
-      }
+      if (bookError) throw new Error("Failed to find or create book: " + bookError.message);
 
-      const newPost = {
-        ...postData,
-        book_id: book_id,
-      };
-
+      const newPost = { ...postData, book_id };
       const { error: postError } = await supabase.from("posts").insert([newPost]);
-
-      if (postError) {
-        throw new Error(postError.message);
-      }
+      if (postError) throw new Error(postError.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      setTitle("");
-      setAuthors("");
+      setSelectedBook(null);
       setPageRef("");
       setDesc("");
       setFile(null);
     },
     onError: () => {
-    alert("An error occurred while sharing your post. Please try again.");      
+      alert("An error occurred while sharing your post. Please try again.");      
     }
-});
+  });
 
   const handleClick = async (e) => {
     e.preventDefault();
     
-    if (!file || !title.trim()) {
-      alert("Please upload an image and provide the book title.");
+    if (!file || !selectedBook) {
+      alert("Please upload an image and select a book.");
       return; 
     }
 
@@ -102,11 +85,7 @@ const Share = () => {
         user_id: currentUser.id,
         page_reference: pageRef || null,
       };
-      postMutation.mutate({
-        title: title.trim(),
-        authors: authors.trim(),
-        postData,
-      });
+      postMutation.mutate({ book: selectedBook, postData });
     } catch (err) {
       alert("Failed to upload image: " + err.message);
       return;
@@ -127,7 +106,7 @@ const Share = () => {
               placeholder="Add your thoughts or a full quote here..." 
               onChange={(e) => setDesc(e.target.value)} 
               value={desc}
-               maxLength={500}
+              maxLength={500}
             />
           </div>
           <div className="right">
@@ -137,20 +116,22 @@ const Share = () => {
         <hr />
         <div className="book-details-inputs">
             <h3>Book Details</h3>
-            <input 
-                type="text" 
-                placeholder="* Book Title (Required)" 
-                onChange={(e) => setTitle(e.target.value)} 
-                value={title}
-                maxLength={200}
-            />
-            <input 
-                type="text" 
-                placeholder="Author(s) (separate with commas, e.g., A. Smith, J. Doe)" 
-                onChange={(e) => setAuthors(e.target.value)} 
-                value={authors}
-                maxLength={100}
-            />
+            {selectedBook ? (
+                <div className="selectedBook">
+                    {selectedBook.thumbnail_url && (
+                        <img src={selectedBook.thumbnail_url} alt="" />
+                    )}
+                    <div className="selectedBookInfo">
+                        <span className="title">{selectedBook.title}</span>
+                        <span className="authors">{selectedBook.authors.join(", ")}</span>
+                    </div>
+                    <button type="button" onClick={() => setSelectedBook(null)}>
+                        Change book
+                    </button>
+                </div>
+            ) : (
+                <BookSearch onSelectBook={setSelectedBook} />
+            )}
             <input 
                 type="text" 
                 placeholder="Page Reference (e.g., Page 42)" 
@@ -177,10 +158,9 @@ const Share = () => {
               <img src={Friend} alt="" />
               <span>Tag Friends</span>
             </div>
-            
           </div>
           <div className="right">
-            <button onClick={handleClick} disabled={postMutation.isPending || !title.trim() || !file}>
+            <button onClick={handleClick} disabled={postMutation.isPending || !selectedBook || !file}>
               {postMutation.isPending ? "Sharing..." : "Share"}
             </button>
           </div>
