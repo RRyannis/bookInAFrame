@@ -46,6 +46,7 @@ const BookSearch = ({ onSelectBook }) => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     aria-label="Search for a book"
+                    disabled={isSearching}
                 />
                 <button type="submit" disabled={isSearching}>
                     {isSearching ? "..." : "Search"}
