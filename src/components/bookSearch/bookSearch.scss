@@ -32,6 +32,7 @@
         cursor: pointer;
         font-weight: 500;
         transition: opacity 0.2s;
+        min-height: 44px
 
         &:disabled {
           opacity: 0.6;
