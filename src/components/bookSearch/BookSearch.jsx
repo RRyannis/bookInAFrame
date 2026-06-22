@@ -48,6 +48,7 @@ const BookSearch = ({ onSelectBook }) => {
                     aria-label="Search for a book"
                     disabled={isSearching}
                     maxLength={100}
+                    autoComplete="off"
                 />
                 <button type="submit" disabled={isSearching}>
                     {isSearching ? "..." : "Search"}
